@@ -2,15 +2,17 @@ const express = require('express')
 const app = express.Router()
 const db = require('../controller/dbController')
 const { salt } = require('../helper/bcryptHelper')
-const routeErrorHandler = require('../middleware/errorMiddleware')
+const routeErrorHandler = require('../middleware/errorHandler')
 
 app.post('/register', (req, res, next) => {
+  const email = req.body.email
   const username = req.body.username
   const password = req.body.password
 
   salt(password)
     .then(hashedPassword => {
       const user = {
+        email,
         username,
         password: hashedPassword
       }
