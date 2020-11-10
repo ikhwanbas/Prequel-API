@@ -6,7 +6,7 @@ const routeErrorHandler = require('../middleware/errorHandler')
 const { checkPassword } = require('../helper/bcryptHelper')
 const secret = 'ini kode rahasia saya'
 
-app.post('/login', (req, res, next) => {
+app.post('/auth/login', (req, res, next) => {
   const username = req.body.username
   const password = req.body.password
   let user;

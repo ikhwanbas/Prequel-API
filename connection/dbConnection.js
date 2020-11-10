@@ -1,9 +1,9 @@
 const mysql = require('mysql')
 
 const db = mysql.createConnection({
-  database: 'stores',
+  database: 'prequel_api',
   user: 'root',
-  password: '123123123',
+  password: '',
   host: 'localhost',
 })
 
