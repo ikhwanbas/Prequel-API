@@ -44,14 +44,16 @@ function createInsertColumns(object) {
 
 function get(tableName, searchParameters) {
   let query = `SELECT * FROM ${tableName}`
+  
   const searchParameterKeys = Object.keys(searchParameters)
-  if (searchParameterKeys.length) {
-    query += " WHERE " + chainWhere(searchParameters)
-  }
+    if (searchParameterKeys.length) {
+      query += " WHERE " + chainWhere(searchParameters)
+    }
+
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
-        reject(err)
+        reject(new Error('fail'))
       else
         resolve(result.map(res => {
           const plainObject = _.toPlainObject(res)
@@ -62,8 +64,12 @@ function get(tableName, searchParameters) {
   })
 }
 
+// function getAll(tableName, searchParameters) {
+//   let query = `SELECT * FROM ${tableName}`
+// }
+
 function add(tableName, body) {
-  const id = `${pluralize.singular(tableName)}/` + shortid()
+  const id = `/${pluralize.singular(tableName)}/` + shortid()
   body.id = id
   const columnValue = createInsertColumns(body)
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
