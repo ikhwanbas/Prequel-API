@@ -6,22 +6,17 @@ const routeErrorHandler = require('../middleware/errorHandler')
 
 
 app.post('/auth/register', (req, res, next) => {
-  const email = req.body.email
-  const username = req.body.username
   const password = req.body.password
-
   salt(password)
     .then(hashedPassword => {
-      const user = {
-        email,
-        username,
-        password: hashedPassword
+      req.body.password = hashedPassword
+      // req.body.createdAt = new Date().toISOString()
+      // req.body.updatedAt = new Date().toISOString()
+      return db.add('users', req.body)
       }
-      return db.add('users', user)
-    })
+    )
     .then(addUserResult => {
-      if (addUserResult && addUserResult.length) {
-        console.log(addUserResult.length)
+      if (addUserResult) {
         res.send(addUserResult)
       } else {
         res.status(400).send('Wrong body')

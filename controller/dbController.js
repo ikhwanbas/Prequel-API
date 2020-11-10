@@ -1,8 +1,9 @@
-const { v4: uuidv4 } = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
 const shortid = require('shortid');
 const db = require('../connection/dbConnection')
 const _ = require('lodash')
 const humps = require('humps')
+const pluralize = require('pluralize')
 
 function chainWhere(object) {
   const parsedObject = humps.decamelizeKeys(object)
@@ -62,7 +63,7 @@ function get(tableName, searchParameters) {
 }
 
 function add(tableName, body) {
-  const id = uuidv4()
+  const id = `${pluralize.singular(tableName)}/` + shortid()
   body.id = id
   const columnValue = createInsertColumns(body)
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
