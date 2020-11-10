@@ -53,7 +53,7 @@ function get(tableName, searchParameters) {
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
-        reject(new Error('fail'))
+        reject(err)
       else
         resolve(result.map(res => {
           const plainObject = _.toPlainObject(res)
@@ -64,9 +64,22 @@ function get(tableName, searchParameters) {
   })
 }
 
-// function getAll(tableName, searchParameters) {
-//   let query = `SELECT * FROM ${tableName}`
-// }
+function getAll(tableName) {
+  let query = `SELECT * FROM ${tableName}`
+  
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
 
 function add(tableName, body) {
   const id = `/${pluralize.singular(tableName)}/` + shortid()
@@ -125,5 +138,6 @@ module.exports = {
   get,
   add,
   edit,
-  remove
+  remove,
+  getAll
 }
