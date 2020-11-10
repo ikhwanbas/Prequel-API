@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../controller/dbController')
+const db = require('../../controller/dbController')
 const jwt = require('jsonwebtoken')
-const routeErrorHandler = require('../middleware/errorHandler')
-const { checkPassword } = require('../helper/bcryptHelper')
+const routeErrorHandler = require('../../middleware/errorHandler')
+const { checkPassword } = require('../../helper/bcryptHelper')
 const secret = 'ini kode rahasia saya'
 
 app.post('/auth/login', (req, res, next) => {

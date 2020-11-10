@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../controller/dbController')
-const { salt } = require('../helper/bcryptHelper')
-const routeErrorHandler = require('../middleware/errorHandler')
+const db = require('../../controller/dbController')
+const { salt } = require('../../helper/bcryptHelper')
+const routeErrorHandler = require('../../middleware/errorHandler')
 
 
 app.post('/auth/register', (req, res, next) => {
