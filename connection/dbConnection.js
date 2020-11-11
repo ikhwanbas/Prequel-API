@@ -3,7 +3,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
   database: 'prequel_api',
   user: 'root',
-  password: '',
+  password: '19940426',
   host: 'localhost',
 })
 
