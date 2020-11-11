@@ -3,6 +3,7 @@ const app = express.Router()
 const db = require('../../controller/dbController')
 const routeErrorHandler = require('../../middleware/errorHandler')
 
+// Browse users:
 app.get('/user', (req, res, next) => {
   db.getAll('users')
     .then(userSearchResults => {
@@ -16,7 +17,7 @@ app.get('/user', (req, res, next) => {
         const limit = 10;
         const startIndex = (req.query.page - 1) * limit;
         const endIndex = req.query.page * limit;
-        
+
         //  Afther that, send the result:
         const page = userSearchResults.slice(startIndex, endIndex)
         if (!page || page.length <= 0) {
@@ -30,14 +31,16 @@ app.get('/user', (req, res, next) => {
     })
 })
 
-app.get('/user/:id', (req, res, next) => {
-  const id = '/user/' + req.params.id
+// Find a user by user's username and it's reviews
+app.get('/user/:username', (req, res, next) => {
+  const username = req.params.username
   let user
   
-  db.get('users', { id })
+  db.get('users', { username })
     .then(userSearchResults => {
       if (userSearchResults && userSearchResults.length) {
         user = userSearchResults[0]
+        // To-do get user's reviews
         res.send(user)
       } else throw 404; 
     })
