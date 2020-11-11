@@ -3,21 +3,29 @@ const app = express.Router();
 const db = require('../../controller/dbController');
 const { salt } = require('../../helper/bcryptHelper');
 const routeErrorHandler = require('../../middleware/errorHandler');
-
-// Regular Expression formatting:
-const usernameRegex = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-const passwordRegex = /^[a-zA-Z0-9@#$%^&*]{8,50}$/;
+const dayjs = require('dayjs')
+const regexHelper = require('../../helper/regexHelper')
+const {validateDateFormat} = require('../../helper/dateHelper')
 
 
 app.post('/auth/register', (req, res, next) => {
+  // Check credential's format:
   const username = req.body.username
   const email = req.body.email
   const password = req.body.password
-  if(!usernameRegex.test(username) ||
-  !emailRegex.test(email) ||
-  !passwordRegex.test(password))
-  next (new Error('ERR_INVALID_FORMAT'));
+  const anyWrongCredentialFormat = (
+    !regexHelper.username.test(username) || 
+    !regexHelper.email.test(email) || 
+    !regexHelper.password.test(password)
+  )
+  if (anyWrongCredentialFormat) {
+    return next (new Error('ERR_INVALID_FORMAT'))
+  };
+
+  // Check birth date's format:
+  if(!validateDateFormat(req.body.birthDate, 'YYYY-MM-DD')) {
+    next (new Error('ERR_INVALID_FORMAT'))
+  }
 
   salt(password)
     .then(hashedPassword => {
@@ -27,9 +35,9 @@ app.post('/auth/register', (req, res, next) => {
     )
     .then(addUserResult => {
       if (addUserResult) {
-        res.send(addUserResult)
+        return res.send(addUserResult)
       } else {
-        throw new Error('ERR_BAD_FIELD_ERROR')
+        next (new Error('ERR_BAD_FIELD_ERROR'))
       }
     })
     .catch(err => {
