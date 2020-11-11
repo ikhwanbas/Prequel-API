@@ -10,19 +10,19 @@ function routeErrorHandler(err, req, res, next) {
   if (errorCodes.some((err) => err  === 'ERR_BAD_FIELD_ERROR'))
     return res.status(400).send('Bad request, wrong key name')
 
-  else if (errorCodes.some((err) => err  === 'ERR_DATA_TOO_LONG'))
+  if (errorCodes.some((err) => err  === 'ERR_DATA_TOO_LONG'))
     return res.status(400).send('Bad request, data too long');
 
-  else if (errorCodes.some((err) => err  === 'ERR_NOT_FOUND'))
+  if (errorCodes.some((err) => err  === 'ERR_NOT_FOUND'))
     return res.status(401).send('Error, data not found');
 
-   
-    // else, if err is available and it's a number, send error status
-  else if (100 <= err <= 599) ) {
-      return res.status(err).send('Oops, something is wrong here')
+  // else, if err is available and it's a number, send error status:
+  if (100 <= err <= 599) {
+    return res.status(err).send('Oops, something is wrong here')
     }
+
   else {
-        console.error(err)
+    console.error(err)
     return res.status(500).send("Oops, something is wrong here")
   }
     

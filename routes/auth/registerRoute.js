@@ -3,9 +3,12 @@ const app = express.Router();
 const db = require('../../controller/dbController');
 const { salt } = require('../../helper/bcryptHelper');
 const routeErrorHandler = require('../../middleware/errorHandler');
+
+// Regular Expression formatting:
 const usernameRegex = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const passwordRegex = /^[a-zA-Z0-9@#$%^&*]{8,50}$/;
+
 
 app.post('/auth/register', (req, res, next) => {
   const username = req.body.username
