@@ -1,17 +1,24 @@
-const express = require('express')
-const app = express.Router()
-const db = require('../../controller/dbController')
-const { salt } = require('../../helper/bcryptHelper')
-const routeErrorHandler = require('../../middleware/errorHandler')
-
+const express = require('express');
+const app = express.Router();
+const db = require('../../controller/dbController');
+const { salt } = require('../../helper/bcryptHelper');
+const routeErrorHandler = require('../../middleware/errorHandler');
+const usernameRegex = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const passwordRegex = /^[a-zA-Z0-9@#$%^&*]{8,50}$/;
 
 app.post('/auth/register', (req, res, next) => {
+  const username = req.body.username
+  const email = req.body.email
   const password = req.body.password
+  if(!usernameRegex.test(username) ||
+  !emailRegex.test(email) ||
+  !passwordRegex.test(password))
+  next (new Error('ERR_INVALID_FORMAT'));
+
   salt(password)
     .then(hashedPassword => {
       req.body.password = hashedPassword
-      // req.body.createdAt = new Date().toISOString()
-      // req.body.updatedAt = new Date().toISOString()
       return db.add('users', req.body)
       }
     )
@@ -19,7 +26,7 @@ app.post('/auth/register', (req, res, next) => {
       if (addUserResult) {
         res.send(addUserResult)
       } else {
-        res.status(400).send('Wrong body')
+        throw new Error('ERR_BAD_FIELD_ERROR')
       }
     })
     .catch(err => {
