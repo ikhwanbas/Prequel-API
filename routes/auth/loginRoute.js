@@ -29,7 +29,7 @@ app.post('/auth/login', async (req, res, next) => {
           expiresIn: '6h'
         })
         user.token = token
-        res.send(user)
+        res.send({ token })
       } else {
         res.status(401).send('please input the right password')
       }
@@ -49,7 +49,7 @@ app.post('/auth/login', async (req, res, next) => {
           expiresIn: '6h'
         })
         user.token = token
-        res.send(user)
+        res.send({ token })
       } else {
         res.status(401).send('Please input the right password')
       }
