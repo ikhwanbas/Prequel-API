@@ -23,19 +23,33 @@ app.post('/auth/register', async (req, res, next) => {
   };
 
   // Check duplicate username or email:
-  // const isFoundDuplicateUsername = await db.get('users', username)
-  // if(isFoundDuplicateUsername) {
-  //   return next (new Error('409'))
-  // }
+  const isFoundDuplicateUsername = await db.get('users', { username: username })
+  const isFoundDuplicateEmail = await db.get('users', { email: email })
+  if (isFoundDuplicateUsername.length || isFoundDuplicateEmail.length) {
+    return next(new Error('ERR_DUPLICATE_ENTRY'))
+  }
 
   // Check birth date's format:
   if (!(await validateDateFormat(req.body.birthDate, 'YYYY-MM-DD'))) {
     return next(new Error('ERR_INVALID_FORMAT'))
   }
 
+  // Check gender format:
+  if (["male", "female"].every(gender => gender != req.body.gender)) {
+    return next(new Error('ERR_INVALID_FORMAT'))
+  }
+
+  // Add user role:
+  req.body.role = "user"
+  if (req.body.username === "admin") {
+    req.body.role = "admin"
+  }
+
+  // Password encryption:
   const hashedPassword = await salt(password)
   req.body.password = hashedPassword
-  result = await db.add('users', req.body)
+
+  const result = await db.add('users', req.body)
   if (result) {
     return res.send(result)
   } else {
