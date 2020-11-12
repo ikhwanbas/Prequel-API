@@ -48,7 +48,7 @@ e.g:
 
 `git pull -u origin master`
 
-`
+`npm start`
 
 1. 
 
