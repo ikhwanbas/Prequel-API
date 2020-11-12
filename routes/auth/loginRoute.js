@@ -4,7 +4,7 @@ const db = require('../../controller/dbController')
 const jwt = require('jsonwebtoken')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const { checkPassword } = require('../../helper/bcryptHelper')
-const secret = 'ini kode rahasia saya'
+const secret = process.env.JWT_SECRET
 
 app.post('/auth/login', (req, res, next) => {
   const username = req.body.username
