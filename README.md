@@ -35,12 +35,12 @@ e.g:
 ssh -i '/home/kunci/binar-batch8.pem' ubuntu@3.1.218.225
 ```
 
-## 4. Clone from the remote server
+## 4. Clone & start server
 After successfully connected, the username on the terminal will be changed into
 ```
 ubuntu@ip-172-31-23-45
 ```
-then clone the Git repository,
+then clone the Git repository (first time only),
 
 put the username and token:
 git clone https://`username`:`deploy_token`@gitlab.example.com/tanuki/awesome_project.git
@@ -51,13 +51,20 @@ e.g:
 git clone https://prequelhorse:Ykr-DF2NGMykn2PYUg4n@gitlab.example.com/tanuki/awesome_project.git
 ```
 
+Finally pull and start the app:
 ```
 git pull -u origin master
 ```
 
 ```
+npm install
+```
+
+```
 npm start
 ```
+
+------------------------
 
 ## Environment variables
 This project uses environment variable as follows:
