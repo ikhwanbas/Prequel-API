@@ -3,9 +3,10 @@ const app = express.Router();
 const db = require('../../controller/dbController');
 const { salt } = require('../../helper/bcryptHelper');
 const routeErrorHandler = require('../../middleware/errorHandler');
-const dayjs = require('dayjs')
 const regexHelper = require('../../helper/regexHelper')
 const { validateDateFormat } = require('../../helper/dateHelper')
+const jwt = require('jsonwebtoken')
+const jwtConfig = require('../../configs/jwtConfig')
 
 
 app.post('/auth/register', async (req, res, next) => {
@@ -49,8 +50,12 @@ app.post('/auth/register', async (req, res, next) => {
   const hashedPassword = await salt(password)
   req.body.password = hashedPassword
 
+  // Add the new user entry into the database:
   const result = await db.add('users', req.body)
   if (result) {
+    // Tokenization:
+    req.body.token = jwt.sign({ id: req.body.id }, jwtConfig.secret, jwtConfig.options)
+    // Finally, send result:
     return res.send(result)
   } else {
     next(new Error('ERR_BAD_FIELD_ERROR'))
