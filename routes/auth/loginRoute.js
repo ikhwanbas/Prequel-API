@@ -4,17 +4,23 @@ const db = require('../../controller/dbController')
 const jwt = require('jsonwebtoken')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const { checkPassword } = require('../../helper/bcryptHelper')
-const secret = 'ini kode rahasia saya'
+const secret = process.env.JWT_SECRET
 
 app.post('/auth/login', async (req, res, next) => {
-  const email = req.body.email
-  const username = req.body.username
-  const password = req.body.password
+  const body = req.body
+  const { email, username, password } = body
+
+  // mengecek agar struktur request body harus sama dengan 2.
+  if (Object.keys(body).length != 2) return res.status(400).send('body not allowed')
+
+  // untuk mengecek key password sudah benar atau belum
+  if (!body.password) return res.status(400).send('bad request, please write the right password key')
+
   let user
-  if (!email) {
+  if (body.hasOwnProperty("username")) {
     let userSearchResult = await db.get('users', { username })
       .catch(err => next(err))
-    if (userSearchResult) {
+    if (userSearchResult.length) {
       user = userSearchResult[0]
       let isPasswordMatch = await checkPassword(password, user.password)
         .catch(err => next(err))
@@ -23,7 +29,7 @@ app.post('/auth/login', async (req, res, next) => {
           expiresIn: '6h'
         })
         user.token = token
-        res.header('authorization', user.token).send(user)
+        res.send(user)
       } else {
         res.status(401).send('please input the right password')
       }
@@ -31,10 +37,10 @@ app.post('/auth/login', async (req, res, next) => {
     else {
       res.status(404).send('username is not found')
     }
-  } else if (email) {
+  } else if (body.hasOwnProperty("email")) {
     let userSearchResult = await db.get('users', { email })
       .catch(err => next(err))
-    if (userSearchResult) {
+    if (userSearchResult.length) {
       user = userSearchResult[0]
       let isPasswordMatch = await checkPassword(password, user.password)
         .catch(err => next(err))
@@ -42,15 +48,16 @@ app.post('/auth/login', async (req, res, next) => {
         const token = jwt.sign({ id: user.id }, secret, {
           expiresIn: '6h'
         })
-        console.log();
         user.token = token
-        res.header('authorization', user.token).send(user)
+        res.send(user)
       } else {
         res.status(401).send('Please input the right password')
       }
     } else {
       res.status(404).send('email is not found')
     }
+  } else {
+    res.status(400).send('bad request, please write the right key username or email')
   }
 })
 
