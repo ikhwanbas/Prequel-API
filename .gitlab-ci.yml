@@ -13,6 +13,7 @@ pushToServer:
     #       |
     #       └-> -e means encoding, e.g. \n
     #
+    - chmod 400 $SSH_KEY
     - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "echo 'AWS >> Successfully connect with SSH'"
     
 build: # <-- Job
