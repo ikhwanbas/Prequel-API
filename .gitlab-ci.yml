@@ -4,9 +4,9 @@ stages:
   - start
 
 pushToServer:
-  - stage: push
-  - image: ubuntu
-  - script:
+  stage: push
+  image: ubuntu
+  script:
     - which ssh || apt install openssh-server
 
 build: # <-- Job
