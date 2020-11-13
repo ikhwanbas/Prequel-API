@@ -9,9 +9,9 @@ pushToServer:
     script:
         - which ssh || apt update && apt install -y ssh
         - mkdir -p ~/.ssh # --> make a directory and search if ssh available
-        - echo -e "Host * \n\ tStrictHostKeyCheckingP no \n \n" > ~/.ssh/config 
+        - echo -e "Host *\n\tStrictHostKeyCheckingP no\n\n" > ~/.ssh/config 
         - chmod 400 $SSH_KEY
-        - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "
+        - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS"
           cd $CI_PROJECT_NAME &&
           git pull &&
           npm i &&
