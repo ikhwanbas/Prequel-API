@@ -12,14 +12,14 @@ pushToServer:
     - echo -e "Host *\n\tStrictHostKeyCheckingP no\n\n" > ~/.ssh/config 
     - chmod 400 $SSH_KEY
     - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "
-    cd $CI_PROJECT_NAME &&
-    git pull &&
-    npm if &&
-    pm2 restart server
-    "
+      cd $CI_PROJECT_NAME &&
+      git pull &&
+      npm if &&
+      pm2 restart server
+      "
 
-build: # <-- Job
-  stage: build
-  image: ubuntu
-  script:
-    - echo "hello world!"
+# build: # <-- Job
+#   stage: build
+#   image: ubuntu
+#   script:
+#     - echo "hello world!"
