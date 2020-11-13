@@ -87,6 +87,7 @@ function add(tableName, body) {
   const columnValue = createInsertColumns(body)
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
+
   return new Promise((resolve, reject) => {
     db.query(query, (err) => {
       if (err)
