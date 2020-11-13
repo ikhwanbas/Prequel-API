@@ -8,9 +8,13 @@ app.get('/user', (req, res, next) => {
   db.getAll('users')
     .then(userSearchResults => {
       if (userSearchResults.length) {
-        if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
-          req.query.page == 0
+        if (!req.query.page || !req.query.page <= 0) {
+          req.query.page == 1
         }
+        if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
+          return res.status(422).send('Unprocessable Entity');
+        }
+
 
         //  If results are found & the page is defined in the query, then continue:
         //  Calculate the pagination:
