@@ -1,6 +1,13 @@
 stages:
+  - push
   - build
   - start
+
+pushToServer:
+  - stage: push
+  - image: ubuntu
+  - script:
+    - which ssh
 
 build: # <-- Job
   stage: build
