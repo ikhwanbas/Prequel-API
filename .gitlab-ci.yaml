@@ -1,0 +1,9 @@
+stages:
+  - build
+  - start
+
+build: # <-- Job
+  stage: build
+  image: ubuntu
+  script:
+    - echo "hello world!"
