@@ -4,7 +4,7 @@ const db = require('../../controller/dbController')
 const jwt = require('jsonwebtoken')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const { checkPassword } = require('../../helper/bcryptHelper')
-const secret = process.env.JWT_SECRET
+const jwtConfig = require('../../configs/jwtConfig')
 
 app.post('/auth/login', async (req, res, next) => {
   const body = req.body
@@ -20,14 +20,14 @@ app.post('/auth/login', async (req, res, next) => {
   if (body.hasOwnProperty("username")) {
     let userSearchResult = await db.get('users', { username })
       .catch(err => next(err))
+
     if (userSearchResult.length) {
       user = userSearchResult[0]
       let isPasswordMatch = await checkPassword(password, user.password)
         .catch(err => next(err))
+
       if (isPasswordMatch) {
-        const token = jwt.sign({ id: user.id }, secret, {
-          expiresIn: '6h'
-        })
+        const token = jwt.sign({ id: user.id }, jwtConfig.secret, jwtConfig.options)
         user.token = token
         res.send({ token })
       } else {
@@ -40,14 +40,14 @@ app.post('/auth/login', async (req, res, next) => {
   } else if (body.hasOwnProperty("email")) {
     let userSearchResult = await db.get('users', { email })
       .catch(err => next(err))
+
     if (userSearchResult.length) {
       user = userSearchResult[0]
       let isPasswordMatch = await checkPassword(password, user.password)
         .catch(err => next(err))
+
       if (isPasswordMatch) {
-        const token = jwt.sign({ id: user.id }, secret, {
-          expiresIn: '6h'
-        })
+        const token = jwt.sign({ id: user.id }, jwtConfig.secret, jwtConfig.options)
         user.token = token
         res.send({ token })
       } else {
