@@ -12,8 +12,9 @@ pushToServer:
       - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "
         cd $CI_PROJECT_NAME &&
         pwd &&
-        sh build.sh && 
-        sh run.sh" 
+        git pull &&
+        npm install && 
+        pm2 restart server" 
 # build: # 
 #   stage: build
 #   image: ubuntu
