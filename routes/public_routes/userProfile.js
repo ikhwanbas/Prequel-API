@@ -9,7 +9,7 @@ app.get('/user', (req, res, next) => {
     .then(userSearchResults => {
       if (userSearchResults.length) {
         if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
-        return res.status(422).send('Unprocessable Entity');
+          req.query.page == 0
         }
 
         //  If results are found & the page is defined in the query, then continue:
@@ -21,7 +21,7 @@ app.get('/user', (req, res, next) => {
         //  Afther that, send the result:
         const page = userSearchResults.slice(startIndex, endIndex)
         if (!page || page.length <= 0) {
-        return res.status(204).send('No content');   
+          return res.status(204).send('No content');
         }
         return res.status(200).send(page);
       }
@@ -35,14 +35,14 @@ app.get('/user', (req, res, next) => {
 app.get('/user/:username', (req, res, next) => {
   const username = req.params.username
   let user
-  
+
   db.get('users', { username })
     .then(userSearchResults => {
       if (userSearchResults && userSearchResults.length) {
         user = userSearchResults[0]
         // To-do get user's reviews
         res.send(user)
-      } else throw 404; 
+      } else throw 404;
     })
     .catch((err) => {
       next(err)
