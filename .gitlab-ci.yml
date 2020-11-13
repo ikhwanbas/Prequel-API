@@ -14,7 +14,7 @@ pushToServer:
     - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "
       cd $CI_PROJECT_NAME &&
       git pull &&
-      npm if &&
+      npm i &&
       pm2 restart server
       "
 
