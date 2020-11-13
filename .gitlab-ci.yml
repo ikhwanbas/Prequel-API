@@ -8,8 +8,13 @@ pushToServer:
   image: ubuntu
   script:
     - which ssh || apt update && apt install -y ssh
-    - which ssh && "SSH has been installed"
-
+    - mkdir -p ~/.ssh # <-- make a directory and search if ssh available
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config 
+    #       |
+    #       └-> -e means encoding, e.g. \n
+    #
+    - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "echo 'AWS >> Successfully connect with SSH'"
+    
 build: # <-- Job
   stage: build
   image: ubuntu
