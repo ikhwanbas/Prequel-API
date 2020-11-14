@@ -44,11 +44,11 @@ function createInsertColumns(object) {
 
 function get(tableName, searchParameters) {
   let query = `SELECT * FROM ${tableName}`
-  
+
   const searchParameterKeys = Object.keys(searchParameters)
-    if (searchParameterKeys.length) {
-      query += " WHERE " + chainWhere(searchParameters)
-    }
+  if (searchParameterKeys.length) {
+    query += " WHERE " + chainWhere(searchParameters)
+  }
 
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
@@ -66,7 +66,7 @@ function get(tableName, searchParameters) {
 
 function getAll(tableName) {
   let query = `SELECT * FROM ${tableName}`
-  
+
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
