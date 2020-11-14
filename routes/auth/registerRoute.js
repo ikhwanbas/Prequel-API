@@ -27,17 +27,17 @@ app.post('/auth/register', async (req, res, next) => {
   const isFoundDuplicateUsername = await db.get('users', { username: username })
   const isFoundDuplicateEmail = await db.get('users', { email: email })
   if (isFoundDuplicateUsername.length || isFoundDuplicateEmail.length) {
-    return next(new Error('ERR_DUPLICATE_ENTRY'))
+    return res.status(406).send('Email already exist');
   }
 
   // Check birth date's format:
   if (!(await validateDateFormat(req.body.birthDate, 'YYYY-MM-DD'))) {
-    return next(new Error('ERR_INVALID_FORMAT'))
+    return res.status(406).send('Invalid date format, should be "YYYY-MM-DD"');
   }
 
   // Check gender format:
   if (["male", "female"].every(gender => gender != req.body.gender)) {
-    return next(new Error('ERR_INVALID_FORMAT'))
+    return res.status(406).send('Invalid gender format, should be "male" or "female"');
   }
 
   // Add user role:
