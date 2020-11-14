@@ -1,16 +1,20 @@
 require('dotenv').config()
 const express = require('express')
+const passport = require('passport');
+const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
-
 const app = express()
+
 app.use(bodyParser.json())
 
-/**
- * ⚠️ Propietary code! Do not change! ⚠️
- * What this does is reading all files inside routes folder recrusively
- * and use it by app.use(), so you don't need to import / require any route.
- * Reference: https://www.npmjs.com/package/read-dir-deep
- */
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cookieSession({
+  name: 'user-session',
+  keys: ['key1, key2']
+}))
+
+// run all routes in routes folder:
 const readDir = require('read-dir-deep');
 const path = require('path')
 const routesPath = path.resolve('routes')
