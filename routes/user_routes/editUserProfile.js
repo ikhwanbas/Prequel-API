@@ -6,7 +6,7 @@ const auth = require('../../middleware/auth')
 const passport = require('passport')
 
 // Browse users:
-router.patch('/u/:username/edit',
+router.patch('/user/:username/edit',
     auth.authenticate('bearer', { session: true }),
     (req, res) => {
         console.log(req.session.passport.user)
