@@ -1,0 +1,22 @@
+stages:
+  - push
+
+pushToServer:
+    stage: push
+    image: ubuntu
+    script:
+      - which ssh || apt update && apt install -y ssh
+      - mkdir -p ~/.ssh
+      - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+      - chmod 400 $SSH_KEY
+      - ssh -i "$SSH_KEY" $SSH_USERNAME@$SSH_ADDRESS "
+        cd $CI_PROJECT_NAME &&
+        pwd &&
+        git pull &&
+        npm install && 
+        pm2 restart server" 
+# build: # 
+#   stage: build
+#   image: ubuntu
+#   script:
+#     - echo "hello world!"
