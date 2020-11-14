@@ -1,58 +1,55 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../../controller/dbController')
+const getUser = require('../../controller/getUserController')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const auth = require('../../middleware/auth')
 
 // Browse users:
-app.get('/user', (req, res, next) => {
-  db.getAll('users')
-    .then(userSearchResults => {
-      if (userSearchResults.length) {
-        if (!req.query.page || !req.query.page <= 0) {
-          req.query.page == 1
-        }
-        if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
-          return res.status(422).send('Unprocessable Entity');
-        }
+app.get('/user', async (req, res, next) => {
+  //  Calculate the pagination:
+  const limit = 10;
+  const startIndex = (req.query.page - 1) * limit;
+  const endIndex = req.query.page * limit;
 
+  const result = await getUser.pagination(
+    `users`,
+    `profile_images`,
 
-        //  If results are found & the page is defined in the query, then continue:
-        //  Calculate the pagination:
-        const limit = 10;
-        const startIndex = (req.query.page - 1) * limit;
-        const endIndex = req.query.page * limit;
+    `users.id,
+      users.first_name,
+      users.last_name,
+      users.username,
+      profile_images.image_url as profile_image_url`,
 
-        //  Afther that, send the result:
-        const page = userSearchResults.slice(startIndex, endIndex)
-        if (!page || page.length <= 0) {
-          return res.status(204).send('No content');
-        }
-        return res.status(200).send(page);
-      }
-    })
-    .catch((err) => {
-      next(err)
-    })
+    startIndex,
+    endIndex
+  )
+  if (!result || result.length <= 0) {
+    return res.status(204).send('No content');
+  }
+  return res.status(200).send(result);
+
 })
 
 // Find a user by user's username and it's reviews
-app.get('/user/:username',
-  (req, res, next) => {
-    const username = req.params.username
-    let user
+app.get('/user/:credential',
+  async (req, res, next) => {
+    const credential = req.params.credential
 
-    db.get('users', { username })
-      .then(userSearchResults => {
-        if (userSearchResults && userSearchResults.length) {
-          user = userSearchResults[0]
+    const foundByUsername = await getUser.get(
+      `users`,
+      `profile_images`,
 
-          res.send(user)
-        } else throw 404;
-      })
-      .catch((err) => {
-        next(err)
-      })
+      `users.id,
+      users.first_name,
+      users.last_name,
+      users.username,
+      profile_images.image_url as profile_image_url`,
+
+      { credential }
+    )
+
+    return res.status(200).send(foundByUsername[0])
   })
 
 app.use(routeErrorHandler)

@@ -1,34 +1,26 @@
 const express = require('express');
 const app = express.Router();
-const db = require('../../controller/dbController');
-const { salt } = require('../../helper/bcryptHelper');
-const routeErrorHandler = require('../../middleware/errorHandler');
+const addUser = require('../../controller/addUserController');
 const regexHelper = require('../../helper/regexHelper')
-const { validateDateFormat } = require('../../helper/dateHelper')
 const jwt = require('jsonwebtoken')
 const jwtConfig = require('../../configs/jwtConfig')
-
+const routeErrorHandler = require('../../middleware/errorHandler');
+const { validateDateFormat } = require('../../helper/dateHelper')
+const { salt } = require('../../helper/bcryptHelper');
 
 app.post('/auth/register', async (req, res, next) => {
-  // Check credential's format:
   const username = req.body.username
   const email = req.body.email
   const password = req.body.password
-  const anyWrongCredentialFormat = (
+
+  // Check credential's format:
+  if (
     !regexHelper.username.test(username) ||
     !regexHelper.email.test(email) ||
     !regexHelper.password.test(password)
-  )
-  if (anyWrongCredentialFormat) {
+  ) {
     return next(new Error('ERR_INVALID_FORMAT'))
   };
-
-  // Check duplicate username or email:
-  const isFoundDuplicateUsername = await db.get('users', { username: username })
-  const isFoundDuplicateEmail = await db.get('users', { email: email })
-  if (isFoundDuplicateUsername.length || isFoundDuplicateEmail.length) {
-    return res.status(406).send('Email already exist');
-  }
 
   // Check birth date's format:
   if (!(await validateDateFormat(req.body.birthDate, 'YYYY-MM-DD'))) {
@@ -51,7 +43,7 @@ app.post('/auth/register', async (req, res, next) => {
   req.body.password = hashedPassword
 
   // Add the new user entry into the database:
-  const result = await db.add('users', req.body)
+  const result = await addUser('users', req.body)
   if (result) {
     // Tokenization:
     req.body.token = jwt.sign({ id: req.body.id }, jwtConfig.secret, jwtConfig.options)

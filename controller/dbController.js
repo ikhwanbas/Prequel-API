@@ -82,8 +82,6 @@ function getAll(tableName) {
 }
 
 function add(tableName, body) {
-  const id = `/${pluralize.singular(tableName)}/` + shortid()
-  body.id = id
   const columnValue = createInsertColumns(body)
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
@@ -136,6 +134,9 @@ function remove(tableName, id) {
 
 
 module.exports = {
+  chainWhere,
+  chainSet,
+  createInsertColumns,
   get,
   add,
   edit,

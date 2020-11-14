@@ -4,50 +4,17 @@ const db = require('../connection/dbConnection')
 const _ = require('lodash')
 const humps = require('humps')
 const pluralize = require('pluralize')
+const { createInsertColumns } = require('./dbController')
 
-function chainWhere(object) {
-    const parsedObject = humps.decamelizeKeys(object)
-    const parsedObjectKeys = Object.keys(parsedObject)
-    return parsedObjectKeys.map((objKey, index) => {
-        let value = parsedObject[objKey]
-        if (typeof value === 'string') {
-            value = `"${value}"`
-        }
-        let composedString = `${objKey} = ${value}`
-        if (index + 1 != parsedObjectKeys.length)
-            composedString += ' AND'
-        return composedString
-    }).join(' ')
-}
 
-function chainSet(object) {
-    const parsedObject = humps.decamelizeKeys(object)
-    const parsedObjectKeys = Object.keys(parsedObject)
-    return parsedObjectKeys.map((objKey, index) => {
-        let value = parsedObject[objKey]
-        if (typeof value === 'string') {
-            value = `"${value}"`
-        }
-        let composedString = `${objKey} = ${value}`
-        return composedString
-    }).join(', ')
-}
+function get(leftTable, rightTable, outputs, searchParameters) {
+    let query = `SELECT ${outputs} FROM ${leftTable}`
 
-function createInsertColumns(object) {
-    const parsedObject = humps.decamelizeKeys(object)
-    return {
-        columns: Object.keys(parsedObject).join(','),
-        values: Object.values(parsedObject).map(value =>
-            typeof value === 'string' ? `"${value}"` : value).join(',')
-    }
-}
-
-function get(tableName, outputs, searchParameters) {
-    let query = `SELECT ${outputs} FROM ${tableName}`
-
+    query += ` LEFT JOIN ${rightTable} ON ${leftTable}.id = ${rightTable}.user_id`
     const searchParameterKeys = Object.keys(searchParameters)
     if (searchParameterKeys.length) {
-        query += " WHERE " + chainWhere(searchParameters)
+        query += ` WHERE ${leftTable}.username = "${Object.values(searchParameters)}"
+        OR ${leftTable}.id = "${Object.values(searchParameters)}"`
     }
 
     return new Promise((resolve, reject) => {
@@ -64,8 +31,12 @@ function get(tableName, outputs, searchParameters) {
     })
 }
 
-function getAll(tableName) {
-    let query = `SELECT * FROM ${tableName}`
+function pagination(leftTable, rightTable, outputs, startIndex, endIndex) {
+    let query = `SELECT ${outputs} FROM ${leftTable}`
+
+    query += ` LEFT JOIN ${rightTable} ON ${leftTable}.id = ${rightTable}.user_id`
+
+    query += ` LIMIT ${startIndex}, ${endIndex}`
 
     return new Promise((resolve, reject) => {
         db.query(query, (err, result) => {
@@ -82,9 +53,10 @@ function getAll(tableName) {
 }
 
 function add(tableName, body) {
-    const id = `/${pluralize.singular(tableName)}/` + shortid()
-    body.id = id
+    body.id = `/ ${pluralize.singular(tableName)} /` + shortid()
+    body.username = `/ ${pluralize.singular(tableName)} /` + body.username
     const columnValue = createInsertColumns(body)
+
     let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
 
@@ -98,47 +70,9 @@ function add(tableName, body) {
     })
 }
 
-function edit(tableName, id, body) {
-    let query = `UPDATE ${tableName}
-  SET ${chainSet(body)}
-  WHERE id="${id}"`
-    return new Promise((resolve, reject) => {
-        db.query(query, (err, result) => {
-            if (err)
-                reject(err)
-            else if (!result.affectedRows)
-                reject({
-                    code: "ERR_NOT_FOUND"
-                })
-            else
-                resolve(body)
-        })
-    })
-}
-
-
-function remove(tableName, id) {
-    let query = `DELETE FROM ${tableName}
-  WHERE id="${id}"`
-    return new Promise((resolve, reject) => {
-        db.query(query, (err, result) => {
-            if (err)
-                reject(err)
-            else if (!result.affectedRows)
-                reject({
-                    code: "ERR_NOT_FOUND"
-                })
-            else
-                resolve(id)
-        })
-    })
-}
-
 
 module.exports = {
     get,
     add,
-    edit,
-    remove,
-    getAll
+    pagination
 }
