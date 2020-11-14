@@ -11,8 +11,11 @@ const { salt } = require('../../helper/bcryptHelper');
 router.patch('/user/:username/edit',
     auth.authenticate('bearer', { session: true }),
     async (req, res) => {
+
+        const foundUser = await db.get('users', { id: req.session.passport.user.id })
+        // console.log(foundUser[0]);
         // Check if requested profile to edit is matched with username from token:
-        if (req.params.username != req.session.passport.user.username) {
+        if (foundUser.length <= 0 || req.params.username != foundUser[0].username) {
             return res.status(401).send('Unauthorized');
         };
 

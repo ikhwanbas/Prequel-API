@@ -7,6 +7,13 @@ const db = mysql.createConnection({
   host: process.env.MYSQL_HOST,
 })
 
+// const db = mysql.createConnection({
+//   database: 'prequel_api',
+//   user: 'root',
+//   password: '',
+//   host: 'localhost',
+// })
+
 db.query('SELECT "Database connected!" message', (err, result) => {
   if (err)
     console.log(err);
