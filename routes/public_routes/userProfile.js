@@ -43,7 +43,13 @@ app.get('/user/:username', (req, res, next) => {
   db.get('users', { username })
     .then(userSearchResults => {
       if (userSearchResults && userSearchResults.length) {
-        user = userSearchResults[0]
+        // user = {
+        //   id: userSearchResults[0].id,
+        //   firstName: userSearchResults[0].firstName,
+        //   lastName: userSearchResults[0].lastName,
+        //   username: userSearchResults[0].username,
+        //   gender: userSearchResults[0].gender
+        // }
         // To-do get user's reviews
         res.send(user)
       } else throw 404;
