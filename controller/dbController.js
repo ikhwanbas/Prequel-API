@@ -91,9 +91,9 @@ function add(tableName, body) {
   return new Promise((resolve, reject) => {
     db.query(query, (err) => {
       if (err)
-        reject(err)
+        return reject(err)
       else
-        resolve(body)
+        return resolve(body)
     })
   })
 }
