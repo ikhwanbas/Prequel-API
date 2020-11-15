@@ -82,8 +82,11 @@ function getAll(tableName) {
 }
 
 function add(tableName, body) {
-  body.id = `/${pluralize.singular(tableName)}/` + shortid()
+  tableName = humps.decamelizeKeys(tableName)
+  let parsedTableName = tableName.replace('_', '-')
+  body.id = `/${pluralize.singular(parsedTableName)}/` + shortid()
   const columnValue = createInsertColumns(body)
+
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
 
