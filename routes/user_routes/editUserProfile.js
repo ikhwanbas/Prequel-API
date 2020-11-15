@@ -8,43 +8,32 @@ const { validateDateFormat } = require('../../helper/dateHelper')
 const { salt } = require('../../helper/bcryptHelper');
 
 // Browse users:
-router.patch('/user/:username/edit',
+router.patch('/user/:id/edit',
     auth.authenticate('bearer', { session: true }),
     async (req, res) => {
-
-        const foundUser = await db.get('users', { id: req.session.passport.user.id })
-        // console.log(foundUser[0]);
-        // Check if requested profile to edit is matched with username from token:
-        if (foundUser.length <= 0 || req.params.username != foundUser[0].username) {
-            return res.status(401).send('Unauthorized');
+        // Check if requested profile to edit is matched with id from token:
+        req.params.id = `/user/` + req.params.id
+        if (req.params.id != req.session.passport.user.id) {
+            return res.status(403).send('Error: forbidden');
         };
 
         let newData = {}
-        // Search if the new username is existed in database:
+        // Search if the new username already exists in database:
         if (req.body.username.length > 0) {
             if (!(regexHelper.username.test(req.body.username))) {
                 return res.status(406).send('Invalid username format');
             }
-            const isUsernameExist = await db.get('users', { username: req.body.username });
-            if (isUsernameExist & isUsernameExist.length > 1) {
-                return res.status(400).send('Username already exists');
-            }
-            newData.username = req.body.username
+            newData.username = `/user/` + req.body.username
         }
 
 
-        // Search if the new email is existed in database:
+        // Check email format:
         if (req.body.email.length > 0) {
             if (!(regexHelper.email.test(req.body.email))) {
                 return res.status(406).send('Invalid email format');
             }
-            const isEmailExist = await db.get('users', { email: req.body.email });
-            if (isEmailExist & isEmailExist.length > 1) {
-                return res.status(400).send('Email already exists');
-            }
             newData.email = req.body.email
         }
-
 
         // Hash password if available:
         if (req.body.password.length > 0) {
@@ -58,8 +47,8 @@ router.patch('/user/:username/edit',
 
         // Check birth date's format if available:
         if (req.body.birthDate.length > 0) {
-            if (!(await validateDateFormat(req.body.birthDate, 'YYYY-MM-DD'))) {
-                return next(new Error('ERR_INVALID_FORMAT'))
+            if (!(validateDateFormat(req.body.birthDate, 'YYYY-MM-DD'))) {
+                return res.status(406).send('Invalid date format')
             }
             newData.birthDate = req.body.birthDate
         }
@@ -71,6 +60,7 @@ router.patch('/user/:username/edit',
             }
             newData.gender = req.body.gender
         }
+
         // Check name format:
         if (req.body.firstName.length > 0) {
             if (!(regexHelper.letter.test(req.body.firstName))) {
@@ -84,6 +74,7 @@ router.patch('/user/:username/edit',
             }
             newData.lastName = req.body.lastName
         }
+
 
         // if passed, the user can edit his/her data:
         const result = await db.edit('users', req.session.passport.user.id, newData);
