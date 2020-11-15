@@ -5,7 +5,7 @@ const db = require('../../controller/dbController')
 const auth = require('../../middleware')
 
 router('/movie/:id/review',
-    auth.authenticate('bearer', { session: true })
+    auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
         const foundMovie = await db.get('movies', { id: req.body.movieId })
             .catch(err => next(err))
