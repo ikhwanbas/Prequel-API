@@ -22,7 +22,7 @@ app.get('/movie/:id/review', async (req, res, next) => {
     if (!query.page || isNaN(query.page) || query.page == 0) { return res.status(400).send('please insert page number') }
 
     // melakukan pengambilan data dari database
-    const searchResult = await db.get('movie_reviews', { movieId })
+    const searchResult = await db.get('movie_reviews', { movieId: (`/movie/` + movieId) })
         .catch(err => next(err))
 
     // melakukan pagination/ pembatasan halaman agar 1 halaman tidak lebih dari 10
