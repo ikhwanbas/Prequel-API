@@ -1,12 +1,12 @@
 const express = require ('express')
 const app = express.Router()
-const db = require('../controller/dbController')
-const routeErrorHandler = require('../middleware/errorHandler')
-const auth = require('../middleware/auth')
+const db = require('../../controller/dbController')
+const routeErrorHandler = require('../../middleware/errorHandler')
+const auth = require('../../middleware/auth')
 
 app.get('/movie', (req, res, next) => {
-db.getAll('movies')
-  .then (movieSearchResults => {
+db.getAll('movies')  
+.then (movieSearchResults => {
       if (movieSearchResults.length) {
           if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
             return res.status(422).send('Unprocessable Entity');      
