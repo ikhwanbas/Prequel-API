@@ -1,10 +1,7 @@
 const express = require('express')
 const app = express.Router()
 const db = require('../../controller/dbController')
-const jwt = require('jsonwebtoken')
 const routeErrorHandler = require('../../middleware/errorHandler')
-const { checkPassword } = require('../../helper/bcryptHelper')
-const jwtConfig = require('../../configs/jwtConfig')
 
 app.get('/movie/:id/review', async (req, res, next) => {
     const query = req.query
