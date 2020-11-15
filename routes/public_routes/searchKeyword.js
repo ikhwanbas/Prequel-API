@@ -16,7 +16,7 @@ app.get('/movies/', async (req, res) => {
     }
 
     // mengkondisikan agar page tidak kosong
-    if (!query.page) { return res.status(400).send('please insert page number') }
+    if (!query.page || isNaN(query.page) || query.page == 0) { return res.status(400).send('please insert page number') }
 
     // melakukan pengambilan data dari database
     const searchResult = await db.get('movies', 'movie_details', searchParameter)
