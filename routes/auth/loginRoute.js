@@ -8,8 +8,8 @@ const jwtConfig = require('../../configs/jwtConfig')
 
 app.post('/auth/login', async (req, res, next) => {
   const body = req.body
-  const { email, username, password } = body
-
+  let { email, username, password } = body
+  username = `/user/` + username
   // mengecek agar struktur request body harus sama dengan 2.
   if (Object.keys(body).length != 2) return res.status(400).send('body not allowed')
 

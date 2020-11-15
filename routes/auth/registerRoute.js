@@ -44,14 +44,11 @@ app.post('/auth/register', async (req, res, next) => {
 
   // Add the new user entry into the database:
   const result = await addUser('users', req.body)
-  if (result) {
-    // Tokenization:
-    req.body.token = jwt.sign({ id: req.body.id }, jwtConfig.secret, jwtConfig.options)
-    // Finally, send result:
-    return res.send(result)
-  } else {
-    next(new Error('ERR_BAD_FIELD_ERROR'))
-  }
+    .catch(err => next(err))
+  req.body.token = jwt.sign({ id: req.body.id }, jwtConfig.secret, jwtConfig.options)
+
+  // Finally, send result:
+  return res.status(200).send(result)
 })
 
 

@@ -16,8 +16,8 @@ function routeErrorHandler(err, req, res, next) {
   if (errorCodes.some((err) => err === 'ERR_NOT_FOUND'))
     return res.status(401).send('Error: data not found');
 
-  if (errorCodes.some((err) => err === 'ERR_DUPLICATE_ENTRY'))
-    return res.status(409).send('Error: conflict');
+  if (errorCodes.some((err) => err === 'ER_DUP_ENTRY'))
+    return res.status(409).send('Error: duplicate entry');
 
   // else, if err is available and it's a number, send error status:
   if (100 <= err <= 599) {
@@ -28,7 +28,7 @@ function routeErrorHandler(err, req, res, next) {
     console.error(err)
     res.locals.error = err
     const status = err.status || 500;
-    res.status(status).render('error');
+    res.status(status).send('Error');
   }
 
 }

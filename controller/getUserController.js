@@ -13,8 +13,8 @@ function get(leftTable, rightTable, outputs, searchParameters) {
     query += ` LEFT JOIN ${rightTable} ON ${leftTable}.id = ${rightTable}.user_id`
     const searchParameterKeys = Object.keys(searchParameters)
     if (searchParameterKeys.length) {
-        query += ` WHERE ${leftTable}.username = "${Object.values(searchParameters)}"
-        OR ${leftTable}.id = "${Object.values(searchParameters)}"`
+        query += ` WHERE ${leftTable}.username = "/user/${Object.values(searchParameters)}"
+        OR ${leftTable}.id = "/user/${Object.values(searchParameters)}"`
     }
 
     return new Promise((resolve, reject) => {
@@ -52,27 +52,8 @@ function pagination(leftTable, rightTable, outputs, startIndex, endIndex) {
     })
 }
 
-function add(tableName, body) {
-    body.id = `/ ${pluralize.singular(tableName)} /` + shortid()
-    body.username = `/ ${pluralize.singular(tableName)} /` + body.username
-    const columnValue = createInsertColumns(body)
-
-    let query = `INSERT INTO ${tableName} (${columnValue.columns})
-  VALUES (${columnValue.values})`
-
-    return new Promise((resolve, reject) => {
-        db.query(query, (err) => {
-            if (err)
-                reject(err)
-            else
-                resolve(body)
-        })
-    })
-}
-
 
 module.exports = {
     get,
-    add,
     pagination
 }
