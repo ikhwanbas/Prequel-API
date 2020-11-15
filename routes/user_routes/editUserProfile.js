@@ -77,17 +77,14 @@ router.patch('/user/:id/edit',
 
 
         // if passed, the user can edit his/her data:
-        const result = await db.edit('users', req.session.passport.user.id, newData);
-
+        const result = await db.edit('users', req.session.passport.user.id, newData)
+            .catch(err => next(err))
         if (!result || result.length <= 0) {
-            // if false
-            res.status(400).send('Bad request');
+            res.status(400).send('Bad request')
         } else {
-            // if true
             result.message = "User data was successfully updated"
-            res.send(result);
+            res.status(200).send(result);
         }
-        return;
     });
 
 router.use(routeErrorHandler)
