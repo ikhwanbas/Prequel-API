@@ -16,8 +16,9 @@ router.post('/movie/:id/review',
         }
 
         // if rating is not between 0-10, send error:
-        if (0 > req.body.rating > 10) {
-            return res.status(406).send('Error: the rating value is not acceptable')
+        if (!req.body.rating ||
+            0 > req.body.rating > 10) {
+            return res.status(400).send('Error: the rating value is invalid')
         }
 
         // set the movie ID & user ID inside body with the requested
@@ -32,7 +33,7 @@ router.post('/movie/:id/review',
         }).catch(err => next(err))
 
         if (foundMovieReview && foundMovieReview.length > 0) {
-            return res.status(406).send('Error: user already submitted a review for this movie')
+            return res.status(406).send('Error: the user already submitted a review for this movie')
         }
 
         // if everything is ok, continue:
