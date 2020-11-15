@@ -82,7 +82,7 @@ function getAll(tableName) {
 }
 
 function add(tableName, body) {
-  body.id = `/${pluralize.singular(tableName)}` + shortid()
+  body.id = `/${pluralize.singular(tableName)}/` + shortid()
   const columnValue = createInsertColumns(body)
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
