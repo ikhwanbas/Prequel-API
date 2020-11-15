@@ -8,14 +8,24 @@ router.patch('/movie-review/:id',
     auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
 
+        // check if the movie_review.userId is the same with user ID from token:
+        const foundMovieReview = db.get('movie_reviews', {
+            id: req.params.id,
+            userId: req.session.passport.user.id
+        })
+        if (!foundMovieReview || foundMovieReview.length <= 0) {
+            res.status(403).send('Error: forbidden')
+        }
+
         let newData = {}
+        a = typeof req.body.rating
+        console.log(a);
         // if rating is not between 0-10, send error:
-        if (typeof req.body.rating == 'number') {
+        if (typeof req.body.rating === 'number') {
             if (0 > req.body.rating > 10) {
                 return res.status(400).send('Error: the rating value is invalid')
-                // put rating in newData:
-
             }
+            // put rating in newData:
             newData.rating = req.body.rating
         }
 
