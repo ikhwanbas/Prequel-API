@@ -2,9 +2,9 @@ const app = require('express')
 const router = app.Router()
 const errorHandler = require('../../middleware/errorHandler')
 const db = require('../../controller/dbController')
-const auth = require('../../middleware')
+const auth = require('../../middleware/auth')
 
-router('/movie/:id/review',
+router.post('/movie/:id/review',
     auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
         const foundMovie = await db.get('movies', { id: req.body.movieId })
@@ -42,6 +42,6 @@ router('/movie/:id/review',
         }
     })
 
-router.use(errorHandler)
+router.use(errorHandler);
 
 module.exports = router
