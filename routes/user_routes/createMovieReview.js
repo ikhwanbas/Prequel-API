@@ -7,7 +7,8 @@ const auth = require('../../middleware/auth')
 router.post('/movie/:id/review',
     auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
-        const foundMovie = await db.get('movies', { id: req.body.movieId })
+        const foundMovie = await db.get('movies',
+            { id: `/movie/` + req.params.id })
             .catch(err => next(err))
 
         if (!foundMovie || foundMovie.length <= 0) {
