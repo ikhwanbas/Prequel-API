@@ -1,25 +1,27 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../../controller/movieController')
-const routeErrorHandler = require('../../middleware/errorHandler')
+const db = require('../../../controller/dbController')
+const routeErrorHandler = require('../../../middleware/errorHandler')
 
-app.get('/movie/', async (req, res) => {
+app.get('/user/:id/review', async (req, res, next) => {
     const query = req.query
-    const searchParameter = query.search
-
+    const userId = req.params.id
     // menjaga struktur query agar tidak lebih dari 2 input.
-    if (Object.keys(query).length != 2) return res.status(400).send('query not allowed')
+    if (Object.keys(query).length != 1 || Object.keys(req.params).length != 1) return res.status(400).send('query not allowed')
 
     // menjaga agar keyword query tidak berbeda
-    if (!query.hasOwnProperty("search") || !query.hasOwnProperty("page")) {
+    if (!req.params.hasOwnProperty("id") || !query.hasOwnProperty("page")) {
         return res.status(400).send('query is not allowed')
     }
+
+    // mengkondisikan agar page tidak kosong
+    if (!req.params || req.params.id == 0) { return res.status(400).send('please insert user ID') }
 
     // mengkondisikan agar page tidak kosong
     if (!query.page || isNaN(query.page) || query.page == 0) { return res.status(400).send('please insert page number') }
 
     // melakukan pengambilan data dari database
-    const searchResult = await db.get('movies', 'movie_details', searchParameter)
+    const searchResult = await db.get('movie_reviews', { userId: `/user/` + userId })
         .catch(err => next(err))
 
     // melakukan pagination/ pembatasan halaman agar 1 halaman tidak lebih dari 10
@@ -30,7 +32,7 @@ app.get('/movie/', async (req, res) => {
         const page = searchResult.slice(startIndex, endIndex)
         return res.status(200).send(page)
     } else {
-        res.status(404).send('keyword is not found')
+        res.status(404).send('review is not found')
     }
 })
 

@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express.Router()
-const getUser = require('../../controller/getUserController')
-const routeErrorHandler = require('../../middleware/errorHandler')
-const auth = require('../../middleware/auth')
+const getUser = require('../../../controller/getUserController')
+const routeErrorHandler = require('../../../middleware/errorHandler')
+const auth = require('../../../middleware/auth')
 
 // Get users by page query:
 app.get('/user', async (req, res, next) => {

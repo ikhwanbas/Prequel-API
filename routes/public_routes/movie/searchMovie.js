@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../../controller/dbController')
-const routeErrorHandler = require('../../middleware/errorHandler')
+const db = require('../../../controller/dbController')
+const routeErrorHandler = require('../../../middleware/errorHandler')
 
 app.get('/movie', (req, res, next) => {
   db.getAll('movies')
