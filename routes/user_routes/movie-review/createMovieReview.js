@@ -1,8 +1,8 @@
 const app = require('express')
 const router = app.Router()
-const errorHandler = require('../../middleware/errorHandler')
-const db = require('../../controller/dbController')
-const auth = require('../../middleware/auth')
+const errorHandler = require('../../../middleware/errorHandler')
+const db = require('../../../controller/dbController')
+const auth = require('../../../middleware/auth')
 
 router.post('/movie/:id/review',
     auth.authenticate('bearer', { session: true }),

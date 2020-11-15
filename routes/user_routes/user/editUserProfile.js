@@ -1,31 +1,24 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../../controller/dbController')
-const routeErrorHandler = require('../../middleware/errorHandler')
-const auth = require('../../middleware/auth')
-const regexHelper = require('../../helper/regexHelper')
-const { validateDateFormat } = require('../../helper/dateHelper')
-const { salt } = require('../../helper/bcryptHelper');
+const db = require('../../../controller/dbController')
+const routeErrorHandler = require('../../../middleware/errorHandler')
+const auth = require('../../../middleware/auth')
+const regexHelper = require('../../../helper/regexHelper')
+const { validateDateFormat } = require('../../../helper/dateHelper')
+const { salt } = require('../../../helper/bcryptHelper');
 
 // Browse users:
-router.patch('/user/:id/edit',
+router.patch('/user',
     auth.authenticate('bearer', { session: true }),
     async (req, res) => {
-        // Check if requested profile to edit is matched with id from token:
-        req.params.id = `/user/` + req.params.id
-        if (req.params.id != req.session.passport.user.id) {
-            return res.status(403).send('Error: forbidden');
-        };
-
         let newData = {}
-        // Search if the new username already exists in database:
+        // Check username format:
         if (req.body.username.length > 0) {
             if (!(regexHelper.username.test(req.body.username))) {
                 return res.status(406).send('Invalid username format');
             }
             newData.username = `/user/` + req.body.username
         }
-
 
         // Check email format:
         if (req.body.email.length > 0) {
