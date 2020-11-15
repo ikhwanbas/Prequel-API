@@ -3,7 +3,7 @@ const shortid = require('shortid')
 const router = app.Router()
 const db = require('../../controller/dbController')
 const routeErrorHandler = require('../../middleware/errorHandler')
-
+const pluralize = require('pluralize')
 
 router.post('/admin/:tableName/', async (req, res, next) => {
     // Check request:
@@ -14,7 +14,7 @@ router.post('/admin/:tableName/', async (req, res, next) => {
     }
 
     // set id value with shortid:
-    req.body.id = `/${tableName}/` + shortid()
+    req.body.id = `/${pluralize.singular(tableName)}/` + shortid()
     // Try adding the data into the database
     try {
         const result = await db.add(tableName, req.body)
