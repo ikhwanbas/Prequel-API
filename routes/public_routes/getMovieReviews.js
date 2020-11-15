@@ -6,7 +6,7 @@ const routeErrorHandler = require('../../middleware/errorHandler')
 app.get('/movie/:id/review', async (req, res, next) => {
     const query = req.query
     const movieId = req.params.id
-    console.log(req.params);
+
     // menjaga struktur query agar tidak lebih dari 2 input.
     if (Object.keys(query).length != 1 || Object.keys(req.params).length != 1) return res.status(400).send('query not allowed')
 
@@ -16,7 +16,7 @@ app.get('/movie/:id/review', async (req, res, next) => {
     }
 
     // mengkondisikan agar page tidak kosong
-    if (!req.params || req.params.id == 0) { return res.status(400).send('please insert page number') }
+    if (!req.params || req.params.id == 0) { return res.status(400).send('please insert movie ID') }
 
     // mengkondisikan agar page tidak kosong
     if (!query.page || isNaN(query.page) || query.page == 0) { return res.status(400).send('please insert page number') }
