@@ -21,7 +21,7 @@ app.get('/user/:id/review', async (req, res, next) => {
     if (!query.page || isNaN(query.page) || query.page == 0) { return res.status(400).send('please insert page number') }
 
     // melakukan pengambilan data dari database
-    const searchResult = await db.get('movie_reviews', { userId })
+    const searchResult = await db.get('movie_reviews', { userId: `/user/` + userId })
         .catch(err => next(err))
 
     // melakukan pagination/ pembatasan halaman agar 1 halaman tidak lebih dari 10
