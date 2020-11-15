@@ -3,7 +3,7 @@ const app = express.Router()
 const db = require('../../controller/movieController')
 const routeErrorHandler = require('../../middleware/errorHandler')
 
-app.get('/movies/', async (req, res) => {
+app.get('/movie/', async (req, res) => {
     const query = req.query
     const searchParameter = query.search
 
