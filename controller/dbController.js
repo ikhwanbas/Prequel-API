@@ -42,8 +42,8 @@ function createInsertColumns(object) {
   }
 }
 
-function get(tableName, searchParameters) {
-  let query = `SELECT * FROM ${tableName}`
+function get(tableName, searchParameters, output = '*') {
+  let query = `SELECT ${output} FROM ${tableName}`
 
   const searchParameterKeys = Object.keys(searchParameters)
   if (searchParameterKeys.length) {
@@ -63,6 +63,7 @@ function get(tableName, searchParameters) {
     })
   })
 }
+
 
 function getAll(tableName) {
   let query = `SELECT * FROM ${tableName}`
