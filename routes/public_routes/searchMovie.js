@@ -1,11 +1,11 @@
 const express = require ('express')
 const app = express.Router()
-const db = require('../../controller/dbController')
+const movieCont = require('../../controller/movieController')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const auth = require('../../middleware/auth')
 
 app.get('/movie', (req, res, next) => {
-db.getAll('movies')  
+movieCont.getMovie('movies')  
 .then (movieSearchResults => {
       if (movieSearchResults.length) {
           if (!req.query.page || isNaN(req.query.page) || req.query.page == 0) {
