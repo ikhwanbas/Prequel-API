@@ -14,15 +14,36 @@ const jwtConfig = require('../../configs/jwtConfig')
 router.get('/auth/google/callback', async (req, res, next) => {
     const { _json } = req.session.passport.user
     // try to find the user in the database:
-    const foundUser = await db.get('user_socials', { sub: _json.sub })
-    if (foundUser && foundUser.length) {
-        // if user found, send user data & token:
-        foundUser.token = jwt.sign(
-            { id: req.body.id },
+    const foundUserSocial = await db.get('user_socials', { sub: _json.sub })
+        .catch(err => next(err))
+
+    if (foundUserSocial.length) {
+        // if user found, update google info:
+        // prepare the data:
+        const updateUserSocialData = {
+            email_verified: _json.email_verified,
+            locale: _json.locale
+        }
+
+        // try to add the data into the database:
+        await db.edit(
+            'user_socials',
+            foundUserSocial[0].id,
+            updateUserSocialData)
+            .catch(err => next(err))
+
+        // Finally, send user data & token:
+        foundUserSocial.token = await jwt.sign(
+            { id: foundUserSocial.id },
             jwtConfig.secret,
             jwtConfig.options
         )
-        return res.send(foundUser)
+        await () => {
+            if (foundUserSocial.token) {
+            return res.send(foundUserSocial)
+        }
+        else {
+            return next(new Error(500))
     }
 
 
@@ -34,32 +55,49 @@ router.get('/auth/google/callback', async (req, res, next) => {
         email: _json.email,
         role: 'user',
     }
-
-    // add new user data to the database:
+    // add a new user data to the database:
     const newUserResult = await db.add('users', newUserBody)
+        .catch(err => next(err))
+
+
+    // add a new profile image to the database:
+    const newProfilePictureBody = {
+        userId: newUserResult.id,
+        imageUrl: _json.picture
+    }
+    const profileImageResult = await db.add('profile_images', newProfilePictureBody)
         .catch(err => next(err))
 
 
     // if succeeded, send a new user-social data to the database:
     // prepare the data:
-    _json.type = 'google'
-    _json.userId = newUserResult.id
-    delete _json.name
-
+    const newUserSocialData = {
+        sub: _json.sub,
+        email: _json.email,
+        email_verified: _json.email_verified,
+        locale: _json.locale,
+        type: 'google',
+        userId: newUserResult.id,
+    }
     // try to add the data into the database:
     const userSocialResult = await db.add(
-        'user_socials', _json)
+        'user_socials', newUserSocialData)
         .catch(err => next(err))
 
+
     // if succeeded, add a token:
-    userSocialResult.token = jwt.sign(
-        { id: req.body.id },
+    const token = jwt.sign(
+        { id: newUserResult.id },
         jwtConfig.secret,
         jwtConfig.options
     )
 
     // send the result:
-    return res.send(userSocialResult)
+    return res.send([
+        token,
+        newUserResult,
+        userSocialResult,
+        profileImageResult])
 });
 
 router.use(errorHandler)
