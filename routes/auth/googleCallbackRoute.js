@@ -13,39 +13,43 @@ const jwtConfig = require('../../configs/jwtConfig')
 //   back to this application at /auth/google/callback
 router.get('/auth/google/callback', async (req, res, next) => {
     const { _json } = req.session.passport.user
+
     // try to find the user in the database:
-    const foundUserSocial = await db.get('user_socials', { sub: _json.sub })
+    let foundSocial = await db.get('user_socials', { sub: _json.sub })
         .catch(err => next(err))
 
-    if (foundUserSocial.length) {
+    if (foundSocial.length) {
         // if user found, update google info:
         // prepare the data:
         const updateUserSocialData = {
             email_verified: _json.email_verified,
             locale: _json.locale
         }
-
         // try to add the data into the database:
         await db.edit(
             'user_socials',
-            foundUserSocial[0].id,
-            updateUserSocialData)
+            foundSocial[0].id,
+            updateUserSocialData
+        ).catch(err => next(err))
+
+        // Then, get user data:
+        const foundUser = await db.get('users', { id: foundSocial[0].userId })
             .catch(err => next(err))
 
         // Finally, send user data & token:
-        foundUserSocial.token = await jwt.sign(
-            { id: foundUserSocial.id },
+        const loginToken = await jwt.sign(
+            { id: foundUser[0].id },
             jwtConfig.secret,
             jwtConfig.options
         )
-        await () => {
-            if (foundUserSocial.token) {
-            return res.send(foundUserSocial)
+        if (loginToken) {
+            foundUser[0].token = loginToken
+            return res.status(202).send(foundUser[0])
         }
         else {
             return next(new Error(500))
+        }
     }
-
 
     // if user not found, create a new user:
     // prepare the body:
@@ -62,7 +66,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
 
     // add a new profile image to the database:
     const newProfilePictureBody = {
-        userId: newUserResult.id,
+        user_id: newUserResult.id,
         imageUrl: _json.picture
     }
     const profileImageResult = await db.add('profile_images', newProfilePictureBody)
@@ -76,7 +80,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
         email: _json.email,
         email_verified: _json.email_verified,
         locale: _json.locale,
-        type: 'google',
+        type: '/google',
         userId: newUserResult.id,
     }
     // try to add the data into the database:
@@ -93,12 +97,14 @@ router.get('/auth/google/callback', async (req, res, next) => {
     )
 
     // send the result:
-    return res.send([
+    return res.status(201).send([
         token,
         newUserResult,
         userSocialResult,
-        profileImageResult])
-});
+        profileImageResult
+    ])
+
+})
 
 router.use(errorHandler)
 
