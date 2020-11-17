@@ -1,6 +1,6 @@
 const express = require ('express')
 const app = express.Router()
-const movieCont = require('../../controller/movieController')
+fconst movieCont = require('../../controller/movieController')
 const routeErrorHandler = require('../../middleware/errorHandler')
 const auth = require('../../middleware/auth')
 
