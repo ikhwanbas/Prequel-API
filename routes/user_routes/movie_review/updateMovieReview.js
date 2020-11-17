@@ -13,20 +13,14 @@ router.patch('/movie-review/:id',
         let foundMovieReview = await db.get('movie_reviews', {
             id: `/movie-review/` + req.params.id,
             userId: req.session.passport.user.id
-        })
-        foundMovieReview = foundMovieReview[0]
-
-        if (!foundMovieReview || foundMovieReview.length <= 0) {
-            // if not found:
-            res.status(403).send('Error: forbidden')
-        }
+        }).catch(err => next(err))
 
         // prepare a storage for the new movie review data:
         let newMovieReviewData = {}
 
         // if rating is not between 0-10, send error:
         if (typeof req.body.rating === 'number') {
-            if (0 > req.body.rating > 10) {
+            if (0 > req.body.rating || req.body.rating > 10) {
                 return res.status(400).send('Error: the rating value is invalid')
             }
             // put rating in newMovieReviewData:

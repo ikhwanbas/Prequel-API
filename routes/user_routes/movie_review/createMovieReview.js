@@ -14,14 +14,9 @@ router.post('/movie/:id/review',
             { id: `/movie/` + req.params.id })
             .catch(err => next(err))
 
-        if (!foundMovie || foundMovie.length <= 0) {
-            // if movie was not found, send error:
-            return res.status(404).send('Error: movie data not found')
-        }
-
         // if rating is not between 0-10, send error:
         if (!req.body.rating ||
-            0 > req.body.rating > 10) {
+            0 > req.body.rating || req.body.rating > 10) {
             return res.status(400).send('Error: the rating value is invalid')
         }
 
