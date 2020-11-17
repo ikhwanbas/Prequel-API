@@ -33,7 +33,7 @@ app.get('/movie/:id/review', async (req, res, next) => {
         const page = searchResult.slice(startIndex, endIndex)
         return res.status(200).send(page)
     } else {
-        res.status(404).send('keyword is not found')
+        res.status(404).send('Error: data not found')
     }
 })
 

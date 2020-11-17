@@ -46,7 +46,6 @@ router.patch('/movie-review/:id',
 
         if (result) {
             // if successfully edited, re-calculate the movie's rating:
-
             // get all rating numbers of the movie:
             let newMovieAverageRating = await db.get(
                 'movie_reviews',
@@ -55,25 +54,23 @@ router.patch('/movie-review/:id',
             ).catch(err => console.log(err))
             newMovieAverageRating = _.meanBy(newMovieAverageRating, (obj) => obj.rating)
 
-
             if (newMovieAverageRating) {
                 // if ok, continue to send the updated data:
-                updatedAverageReview = await db.edit(
+                updatedAverageRating = await db.edit(
                     'movies',
                     foundMovieReview.movieId,
-                    { averageReview: newMovieAverageRating }
+                    { averageRating: newMovieAverageRating }
                 ).catch(err => console.log(err))
 
                 // if ok, continue to send the updated data:
                 result.message = `The movie review and movie's average-rating was successfully updated.`
-                result.result = updatedAverageReview
+                result.result = updatedAverageRating
                 result.result.movieId = foundMovieReview.movieId
                 return res.status(200).send(result)
             }
             // if failed to calculate the updated data, send failure message:
             result.message = `The movie review  was successsfully updated,
             but the movie average-rating was failed to be updated.`
-
             return res.status(200).send(result)
         }
     })
