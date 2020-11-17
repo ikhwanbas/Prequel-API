@@ -5,6 +5,13 @@ const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const app = express()
 
+
+app.set('view engine', 'ejs')
+app.use(express.static("views"));
+app.use(express.static("img"));
+app.use(express.static("js"));
+app.use(express.static("css"));
+
 app.use(bodyParser.json())
 app.use(passport.initialize());
 app.use(passport.session());
@@ -12,7 +19,6 @@ app.use(cookieSession({
   name: 'user-session',
   keys: ['key1, key2']
 }))
-app.set('view engine', 'html');
 
 // run all routes in routes folder:
 const readDir = require('read-dir-deep');

@@ -94,10 +94,14 @@ function getPage(tableName, searchParameters, output = '*', startIndex, endIndex
 }
 
 
-function getAll(tableName, output = '*') {
-  tableName = humps.decamelize(tableName).replace('-', '_')
+function getJoin(tableLeft, tableRight, output = '*', rightId) {
+  tableLeft = humps.decamelize(tableLeft).replace('-', '_')
+  tableRight = humps.decamelize(tableRight).replace('-', '_')
 
-  let query = `SELECT ${output} FROM ${tableName}`
+  let query = `SELECT ${output} FROM ${tableLeft} a LEFT JOIN ${tableRight} b`
+
+  query += ` ON a.id = b.${rightId}`
+
 
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
@@ -112,6 +116,7 @@ function getAll(tableName, output = '*') {
     })
   })
 }
+
 
 function add(tableName, body) {
   tableName = humps.decamelizeKeys(tableName)
@@ -179,6 +184,6 @@ module.exports = {
   add,
   edit,
   remove,
-  getAll,
-  getPage
+  getPage,
+  getJoin
 }
