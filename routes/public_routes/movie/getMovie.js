@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express.Router()
-const db = require('../../../controller/movieController')
+const dbMovie = require('../../../controller/movieController')
 const routeErrorHandler = require('../../../middleware/errorHandler')
 
-app.get('/movie', async (req, res) => {
+app.get('/movie', async (req, res, next) => {
     // apabila query page tidak ada, page = 1
     if (!req.query.page) {
         req.query.page = 1
@@ -16,14 +16,15 @@ app.get('/movie', async (req, res) => {
 
     if (req.query.search) {
         // melakukan pengambilan data dari database apabila ada parameter search:
-        const searchResult = await db.search('movies', 'movie_details', searchParameter, startIndex, endIndex)
-            .catch(err => next(err))
+        const searchResult = await dbMovie.search(
+            'movies', 'movie_details', req.query.search, startIndex, endIndex
+        ).catch(err => next(err))
         if (searchResult.length) {
             return res.status(200).send(searchResult)
         }
     }
     // apabila tidak ada search query, lakukan pengambilan movie page:
-    const moviePageResult = await db.get('movies', 'movie_details', searchParameter)
+    const moviePageResult = await dbMovie.getMovie('movies')
         .catch(err => next(err))
     if (moviePageResult.length) {
         return res.status(200).send(moviePageResult)
