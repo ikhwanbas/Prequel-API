@@ -1,5 +1,5 @@
 {
-  "name": "storesapi",
+  "name": "prequelapi",
   "version": "0.1.0",
   "description": "API that helps stores",
   "main": "server.js",
