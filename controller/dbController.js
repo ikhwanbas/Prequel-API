@@ -65,6 +65,31 @@ function get(tableName, searchParameters, output = '*') {
 }
 
 
+function getPage(tableName, searchParameters, output = '*', startIndex, endIndex) {
+  let query = `SELECT ${output} FROM ${tableName}`
+
+  const searchParameterKeys = Object.keys(searchParameters)
+  if (searchParameterKeys.length) {
+    query += " WHERE " + chainWhere(searchParameters)
+
+    query += ` LIMIT startIndex, endIndex`
+  }
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
+
 function getAll(tableName) {
   let query = `SELECT * FROM ${tableName}`
 
@@ -146,5 +171,6 @@ module.exports = {
   add,
   edit,
   remove,
-  getAll
+  getAll,
+  getPage
 }

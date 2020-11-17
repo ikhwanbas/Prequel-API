@@ -2,7 +2,7 @@ const db = require('../connection/dbConnection')
 const _ = require('lodash')
 const humps = require('humps')
 
-function get(tableName, tableName2, searchParameter) {
+function search(tableName, tableName2, searchParameter, startIndex, endIndex) {
   let query = `SELECT 
 ${tableName}.id,
 ${tableName}.title, 
@@ -22,6 +22,7 @@ HAVING title LIKE '%${searchParameter}%'
 OR synopsis LIKE '%${searchParameter}%' 
 OR info LIKE '%${searchParameter}%' 
 OR details LIKE '%${searchParameter}%'
+LIMIT ${startIndex}, ${endIndex}
 `
 
   return new Promise((resolve, reject) => {
@@ -39,5 +40,5 @@ OR details LIKE '%${searchParameter}%'
 }
 
 module.exports = {
-  get
+  search
 }
