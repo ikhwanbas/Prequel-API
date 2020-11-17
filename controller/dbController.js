@@ -94,10 +94,10 @@ function getPage(tableName, searchParameters, output = '*', startIndex, endIndex
 }
 
 
-function getAll(tableName) {
+function getAll(tableName, output = '*') {
   tableName = humps.decamelize(tableName).replace('-', '_')
 
-  let query = `SELECT * FROM ${tableName}`
+  let query = `SELECT ${output} FROM ${tableName}`
 
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {

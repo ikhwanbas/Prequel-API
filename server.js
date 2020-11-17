@@ -6,13 +6,13 @@ const bodyParser = require('body-parser')
 const app = express()
 
 app.use(bodyParser.json())
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieSession({
   name: 'user-session',
   keys: ['key1, key2']
 }))
+app.set('view engine', 'html');
 
 // run all routes in routes folder:
 const readDir = require('read-dir-deep');
