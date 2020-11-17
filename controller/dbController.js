@@ -43,6 +43,8 @@ function createInsertColumns(object) {
 }
 
 function get(tableName, searchParameters, output = '*') {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
   let query = `SELECT ${output} FROM ${tableName}`
 
   const searchParameterKeys = Object.keys(searchParameters)
@@ -66,6 +68,8 @@ function get(tableName, searchParameters, output = '*') {
 
 
 function getPage(tableName, searchParameters, output = '*', startIndex, endIndex) {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
   let query = `SELECT ${output} FROM ${tableName}`
 
   const searchParameterKeys = Object.keys(searchParameters)
@@ -91,6 +95,8 @@ function getPage(tableName, searchParameters, output = '*', startIndex, endIndex
 
 
 function getAll(tableName) {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
   let query = `SELECT * FROM ${tableName}`
 
   return new Promise((resolve, reject) => {
@@ -127,6 +133,8 @@ function add(tableName, body) {
 }
 
 function edit(tableName, id, body) {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
   let query = `UPDATE ${tableName}
   SET ${chainSet(body)}
   WHERE id="${id}"`
