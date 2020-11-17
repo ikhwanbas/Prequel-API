@@ -9,7 +9,10 @@ app.get('/movie', async (req, res, next) => {
         req.query.page = 1
     }
     // hitung start index dan end index:
-    const limit = 10;
+    let limit = 8;
+    if (req.query.limit && req.query.limit > 0) {
+        limit = req.query.limit
+    }
     const startIndex = (req.query.page - 1) * limit;
     const endIndex = req.query.page * limit;
 
@@ -24,7 +27,7 @@ app.get('/movie', async (req, res, next) => {
         }
     }
     // apabila tidak ada search query, lakukan pengambilan movie page:
-    const moviePageResult = await dbMovie.getMovie('movies')
+    const moviePageResult = await dbMovie.getMovie('movies', startIndex, endIndex)
         .catch(err => next(err))
     if (moviePageResult.length) {
         return res.status(200).send(moviePageResult)

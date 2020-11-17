@@ -40,13 +40,14 @@ LIMIT ${startIndex}, ${endIndex}
 }
 
 
-function getMovie(tableName) {
+function getMovie(tableName, startIndex, endIndex) {
   let query = `SELECT movies.*, 
     GROUP_CONCAT(movie_details.type, movie_details.text separator '|') as details
     FROM ${tableName}
     LEFT JOIN movie_details
     ON movies.id = movie_details.movie_id
-    GROUP BY movies.id;`
+    GROUP BY movies.id
+    LIMIT ${startIndex}, ${endIndex}`
 
 
   return new Promise((resolve, reject) => {

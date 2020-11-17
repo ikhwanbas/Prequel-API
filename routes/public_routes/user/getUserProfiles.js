@@ -7,12 +7,18 @@ const auth = require('../../../middleware/auth')
 // Get users by page query:
 app.get('/user', async (req, res, next) => {
   //  Calculate the pagination:
-  const limit = 10;
-  if (isNaN(req.query.page) || req.query.page <= 0) {
-    res.status(406).send('Error: Request not acceptable')
+  // hitung start index dan end index:
+  let limit = 8;
+  if (req.query.limit && req.query.limit > 0) {
+    limit = req.query.limit
   }
   const startIndex = (req.query.page - 1) * limit;
   const endIndex = req.query.page * limit;
+
+
+  if (isNaN(req.query.page) || req.query.page <= 0) {
+    res.status(406).send('Error: Request not acceptable')
+  }
 
   const result = await getUser
     .pagination(
