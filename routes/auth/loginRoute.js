@@ -29,7 +29,8 @@ app.post('/auth/login', async (req, res, next) => {
       if (isPasswordMatch) {
         const token = jwt.sign({ id: user.id }, jwtConfig.secret, jwtConfig.options)
         user.token = token
-        res.send({ token })
+        delete user.password
+        res.send(user)
       } else {
         res.status(401).send('please input the right password')
       }
@@ -49,7 +50,8 @@ app.post('/auth/login', async (req, res, next) => {
       if (isPasswordMatch) {
         const token = jwt.sign({ id: user.id }, jwtConfig.secret, jwtConfig.options)
         user.token = token
-        res.send({ token })
+        delete user.password
+        res.send(user)
       } else {
         res.status(401).send('Please input the right password')
       }
