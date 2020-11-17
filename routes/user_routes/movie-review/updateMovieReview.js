@@ -9,7 +9,6 @@ const _ = require('lodash')
 router.patch('/movie-review/:id',
     auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
-
         // check if the movie_review.userId is the same with user ID from token:
         let foundMovieReview = await db.get('movie_reviews', {
             id: `/movie-review/` + req.params.id,
@@ -18,6 +17,7 @@ router.patch('/movie-review/:id',
         foundMovieReview = foundMovieReview[0]
 
         if (!foundMovieReview || foundMovieReview.length <= 0) {
+            // if not found:
             res.status(403).send('Error: forbidden')
         }
 
@@ -68,7 +68,6 @@ router.patch('/movie-review/:id',
                 result.message = `The movie review and movie's average-rating was successfully updated.`
                 result.result = updatedAverageReview
                 result.result.movieId = foundMovieReview.movieId
-
                 return res.status(200).send(result)
             }
             // if failed to calculate the updated data, send failure message:
