@@ -20,8 +20,8 @@ function chainLike(object) {
 
 function getMoviebyGenre(
   genre,
-  startIndex = (0),
-  limit = (8)
+  startIndex,
+  limit
 ) {
   let query = `
 SELECT m.id,
@@ -103,7 +103,7 @@ HAVING genre LIKE "%${genre}%"
 }
 
 
-function search(searchParameter, startIndex = 0, limit = 8) {
+function search(searchParameter, startIndex, limit) {
   let query = `SELECT 
 SELECT m.id,
 m.title,
@@ -185,7 +185,7 @@ LIMIT ${startIndex}, ${limit}
 }
 
 
-function getMovie(startIndex = 0, limit = 8) {
+function getMovie(startIndex, limit) {
   let query = `
 SELECT m.id,
 m.title,
