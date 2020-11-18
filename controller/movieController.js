@@ -41,11 +41,13 @@ LIMIT ${startIndex}, ${endIndex}
 
 
 function getMovie(tableName, startIndex, endIndex) {
-  let query = `SELECT movies.*, 
+  let query = `SELECT movies.*, movie_images.image_url,
     GROUP_CONCAT(movie_details.type, movie_details.text separator '|') as details
     FROM ${tableName}
     LEFT JOIN movie_details
     ON movies.id = movie_details.movie_id
+    LEFT JOIN movie_images
+    ON movies.id = movie_images.movie_id
     GROUP BY movies.id
     LIMIT ${startIndex}, ${endIndex}`
 
