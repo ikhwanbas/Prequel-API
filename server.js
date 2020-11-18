@@ -4,7 +4,7 @@ const passport = require('passport');
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const app = express()
-
+const cors = require('cors')
 
 app.set('view engine', 'ejs')
 app.use(express.static("views"));
@@ -19,6 +19,19 @@ app.use(cookieSession({
   name: 'user-session',
   keys: ['key1, key2']
 }))
+
+
+const corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+  if (["http://localhost"].indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }
+  } else {
+    corsOptions = { origin: false }
+  }
+  callback(null, corsOptions)
+}
+app.use(cors(corsOptionsDelegate))
+
 
 // run all routes in routes folder:
 const readDir = require('read-dir-deep');
