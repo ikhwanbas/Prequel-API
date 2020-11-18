@@ -18,8 +18,8 @@ function chainLike(object) {
   }).join(' ')
 }
 
-function getMovie(
-  searchParams,
+function getMoviebyGenre(
+  genre,
   startIndex = (0),
   limit = (8)
 ) {
@@ -79,13 +79,10 @@ ON m.id = mr.movie_id
 LEFT JOIN movie_likes ml
 ON m.id = ml.movie_id
 
-GROUP BY m.id`
+GROUP BY m.id
 
-  const searchParamsKeys = Object.keys(searchParams)
-  if (searchParamsKeys) {
-    query += " HAVING " + chainLike(searchParams)
-  }
-
+HAVING genre LIKE "%${genre}%"
+`
   query += ` LIMIT ${startIndex}, ${limit}`
 
   return new Promise((resolve, reject) => {
@@ -102,9 +99,172 @@ GROUP BY m.id`
         }))
     })
   })
+
 }
 
 
+function search(searchParameter, startIndex = 0, limit = 8) {
+  let query = `SELECT 
+SELECT m.id,
+m.title,
+GROUP_CONCAT(
+CASE WHEN mi.type = '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as poster_url,
+
+GROUP_CONCAT(
+CASE WHEN mi.type != '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as image_urls,
+
+m.release_date,
+m.synopsis,
+m.info,
+m.trailer_url,
+COUNT(ml.id) as like_count,
+AVG(mr.rating) as average_rating,
+COUNT(mr.id) as review_count,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/genre'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as genre,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/star'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as star,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/production'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as production,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/director'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as director
+
+GROUP_CONCAT(movie_details.text SEPARATOR ', ') as details
+
+FROM movies m
+
+LEFT JOIN movie_details md
+ON m.id = md.movie_id
+
+LEFT JOIN movie_images mi
+ON m.id = mi.movie_id
+
+LEFT JOIN movie_reviews mr
+ON m.id = mr.movie_id
+
+LEFT JOIN movie_likes ml
+ON m.id = ml.movie_id
+
+GROUP BY m.id
+
+HAVING title LIKE '%${searchParameter}%' 
+OR synopsis LIKE '%${searchParameter}%' 
+OR info LIKE '%${searchParameter}%' 
+OR details LIKE '%${searchParameter}%'
+LIMIT ${startIndex}, ${limit}
+`
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
+
+function getMovie(startIndex = 0, limit = 8) {
+  let query = `
+SELECT m.id,
+m.title,
+
+GROUP_CONCAT(
+CASE WHEN mi.type = '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as poster_url,
+
+GROUP_CONCAT(
+CASE WHEN mi.type != '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as image_urls,
+
+m.release_date,
+m.synopsis,
+m.info,
+m.trailer_url,
+COUNT(ml.id) as like_count,
+AVG(mr.rating) as average_rating,
+COUNT(mr.id) as review_count,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/genre'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as genre,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/star'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as star,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/production'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as production,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/director'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as director
+
+FROM movies m
+
+LEFT JOIN movie_details md
+ON m.id = md.movie_id
+
+LEFT JOIN movie_images mi
+ON m.id = mi.movie_id
+
+LEFT JOIN movie_reviews mr
+ON m.id = mr.movie_id
+
+LEFT JOIN movie_likes ml
+ON m.id = ml.movie_id
+
+GROUP BY m.id
+LIMIT ${startIndex}, ${limit}`
+
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
+
+
+
 module.exports = {
-  getMovie
+  getMoviebyGenre,
+  getMovie,
+  search
 }
