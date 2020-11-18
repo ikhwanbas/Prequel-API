@@ -48,22 +48,22 @@ COUNT(mr.id) as review_count,
 GROUP_CONCAT(
 CASE WHEN md.type = '/genre'
 THEN md.text ELSE NULL END SEPARATOR ', '
-) as genres,
+) as genre,
 
 GROUP_CONCAT(
 CASE WHEN md.type = '/star'
 THEN md.text ELSE NULL END SEPARATOR ', '
-) as stars,
+) as star,
 
 GROUP_CONCAT(
 CASE WHEN md.type = '/production'
 THEN md.text ELSE NULL END SEPARATOR ', '
-) as productions,
+) as production,
 
 GROUP_CONCAT(
 CASE WHEN md.type = '/director'
 THEN md.text ELSE NULL END SEPARATOR ', '
-) as directors
+) as director
 
 FROM movies m
 
