@@ -25,10 +25,7 @@ app.get('/movie', async (req, res, next) => {
     // apabila tidak ada search query, lakukan pengambilan movie page:
     const moviePageResult = await dbMovie.getMovie(searchParams, startIndex, limit)
         .catch(err => next(err))
-    if (moviePageResult.length) {
-        return res.status(200).send(moviePageResult)
-    }
-    console.log('error');
+    return res.status(200).send(moviePageResult)
 })
 
 
