@@ -18,8 +18,7 @@ app.get('/movie', async (req, res, next) => {
     }
 
     // apabila searchParams tidak ada, searchParams = {}
-    let searchParams = {}
-    if (req.body && req.body.length > 0) {
+    if (req.body) {
         searchParams = req.body
     }
 

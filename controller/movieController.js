@@ -82,7 +82,7 @@ ON m.id = ml.movie_id
 GROUP BY m.id`
 
   const searchParamsKeys = Object.keys(searchParams)
-  if (searchParamsKeys.length) {
+  if (searchParamsKeys) {
     query += " HAVING " + chainLike(searchParams)
   }
 
