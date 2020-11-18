@@ -2,14 +2,14 @@ const db = require('../connection/dbConnection')
 const _ = require('lodash')
 const humps = require('humps')
 
-function get(tableName, tableName2, searchParameter) {
+function search(tableName, tableName2, searchParameter, startIndex, endIndex) {
   let query = `SELECT 
 ${tableName}.id,
 ${tableName}.title, 
 ${tableName}.release_date, 
 ${tableName}.synopsis, 
 ${tableName}.trailer_url,
-${tableName}.average_review,
+${tableName}.average_rating,
 ${tableName}.created_at,
 ${tableName}.updated_at,
 ${tableName}.info,
@@ -22,6 +22,7 @@ HAVING title LIKE '%${searchParameter}%'
 OR synopsis LIKE '%${searchParameter}%' 
 OR info LIKE '%${searchParameter}%' 
 OR details LIKE '%${searchParameter}%'
+LIMIT ${startIndex}, ${endIndex}
 `
 
   return new Promise((resolve, reject) => {
@@ -38,6 +39,33 @@ OR details LIKE '%${searchParameter}%'
   })
 }
 
+
+function getMovie(tableName, startIndex, endIndex) {
+  let query = `SELECT movies.*, 
+    GROUP_CONCAT(movie_details.type, movie_details.text separator '|') as details
+    FROM ${tableName}
+    LEFT JOIN movie_details
+    ON movies.id = movie_details.movie_id
+    GROUP BY movies.id
+    LIMIT ${startIndex}, ${endIndex}`
+
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
+
 module.exports = {
-  get
+  search,
+  getMovie
 }

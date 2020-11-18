@@ -42,8 +42,10 @@ function createInsertColumns(object) {
   }
 }
 
-function get(tableName, searchParameters) {
-  let query = `SELECT * FROM ${tableName}`
+function get(tableName, searchParameters, output = '*') {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
+  let query = `SELECT ${output} FROM ${tableName}`
 
   const searchParameterKeys = Object.keys(searchParameters)
   if (searchParameterKeys.length) {
@@ -64,8 +66,18 @@ function get(tableName, searchParameters) {
   })
 }
 
-function getAll(tableName) {
-  let query = `SELECT * FROM ${tableName}`
+
+function getPage(tableName, searchParameters, output = '*', startIndex, endIndex) {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
+  let query = `SELECT ${output} FROM ${tableName}`
+
+  const searchParameterKeys = Object.keys(searchParameters)
+  if (searchParameterKeys.length) {
+    query += " WHERE " + chainWhere(searchParameters)
+
+    query += ` LIMIT startIndex, endIndex`
+  }
 
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
@@ -81,9 +93,37 @@ function getAll(tableName) {
   })
 }
 
+
+function getJoin(tableLeft, tableRight, output = '*', rightId) {
+  tableLeft = humps.decamelize(tableLeft).replace('-', '_')
+  tableRight = humps.decamelize(tableRight).replace('-', '_')
+
+  let query = `SELECT ${output} FROM ${tableLeft} a LEFT JOIN ${tableRight} b`
+
+  query += ` ON a.id = b.${rightId}`
+
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
+
 function add(tableName, body) {
-  body.id = `/${pluralize.singular(tableName)}` + shortid()
+  tableName = humps.decamelizeKeys(tableName)
+  let parsedTableName = tableName.replace('_', '-')
+  body.id = `/${pluralize.singular(parsedTableName)}/` + shortid()
   const columnValue = createInsertColumns(body)
+
   let query = `INSERT INTO ${tableName} (${columnValue.columns})
   VALUES (${columnValue.values})`
 
@@ -98,6 +138,8 @@ function add(tableName, body) {
 }
 
 function edit(tableName, id, body) {
+  tableName = humps.decamelize(tableName).replace('-', '_')
+
   let query = `UPDATE ${tableName}
   SET ${chainSet(body)}
   WHERE id="${id}"`
@@ -142,5 +184,6 @@ module.exports = {
   add,
   edit,
   remove,
-  getAll
+  getPage,
+  getJoin
 }

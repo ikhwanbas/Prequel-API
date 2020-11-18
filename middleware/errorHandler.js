@@ -19,11 +19,6 @@ function routeErrorHandler(err, req, res, next) {
   if (errorCodes.some((err) => err === 'ER_DUP_ENTRY'))
     return res.status(409).send('Error: duplicate entry');
 
-  // else, if err is available and it's a number, send error status:
-  if (100 <= err <= 599) {
-    return res.status(err).send('Oops, something is wrong here')
-  }
-
   else {
     console.error(err)
     res.locals.error = err
