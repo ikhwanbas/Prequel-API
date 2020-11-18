@@ -67,7 +67,7 @@ function get(tableName, searchParameters, output = '*') {
 }
 
 
-function getPage(tableName, searchParameters, output = '*', startIndex, endIndex) {
+function getPage(tableName, searchParameters, output = '*', page, limit) {
   tableName = humps.decamelize(tableName).replace('-', '_')
 
   let query = `SELECT ${output} FROM ${tableName}`
@@ -76,7 +76,7 @@ function getPage(tableName, searchParameters, output = '*', startIndex, endIndex
   if (searchParameterKeys.length) {
     query += " WHERE " + chainWhere(searchParameters)
 
-    query += ` LIMIT startIndex, endIndex`
+    query += ` LIMIT ${page}, ${limit}`
   }
 
   return new Promise((resolve, reject) => {
