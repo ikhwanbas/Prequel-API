@@ -19,7 +19,7 @@ function chainLike(object) {
 }
 
 function getMovie(
-  searchParams = {},
+  searchParams,
   startIndex = (0),
   limit = (8)
 ) {
