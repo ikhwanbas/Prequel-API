@@ -16,7 +16,7 @@ router.get('/admin/:tableName', async (req, res, next) => {
 
     // Try adding the data into the database
     try {
-        const result = await db.getAll(tableName)
+        const result = await db.get(tableName)
         return res.status(200).send(result)
     } catch (err) {
         console.log(err);
