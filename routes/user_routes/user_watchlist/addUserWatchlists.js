@@ -5,7 +5,7 @@ const db = require('../../../controller/watchlistController')
 const auth = require('../../../middleware/auth')
 const shortid = require('shortid');
 
-router.post('/movie/:id/watchlists',
+router.post('/movie/:id/watchlist',
     auth.authenticate('bearer', { session: true }),
     async (req, res, next) => {
         const userWatchlistId = `/watchlist/` + shortid()
@@ -33,7 +33,6 @@ router.post('/movie/:id/watchlists',
             await db.deletes('user_watchlists', 'user_id', userId, 'movie_id', movieId)
                 .catch(err => next(err))
         }
-        // untuk menampilkan user watchlist sebagai response
         return res.status(200).send('okay, watchlist has been added / removed')
     })
 

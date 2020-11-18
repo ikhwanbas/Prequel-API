@@ -57,7 +57,7 @@ function deletes(tableName, columnName1, id, columnName2, value2) {
 function add(tableName, columnName1, value1, columnName2, value2, columnName3, value3) {
   let query = `INSERT INTO ${tableName} (${columnName1}, ${columnName2}, ${columnName3} )
   VALUES ("${value1}", "${value2}", "${value3}")`
-  console.log(query);
+
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
@@ -67,7 +67,31 @@ function add(tableName, columnName1, value1, columnName2, value2, columnName3, v
     })
   })
 }
+
+function getResult(tableName1, tableName2, userId, startIndex, endIndex) {
+  let query = `SELECT *
+  FROM ${tableName1}
+  JOIN ${tableName2}
+  ON ${tableName1}.id = ${tableName2}.movie_id 
+  WHERE ${tableName2}.user_id = '${userId}'
+  LIMIT ${startIndex}, ${endIndex}`
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
+
 module.exports = {
+  getResult,
   getUserWatchList,
   add,
   get,
