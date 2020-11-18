@@ -88,11 +88,12 @@ GROUP BY m.id`
 
   query += ` LIMIT ${startIndex}, ${limit}`
 
-  console.log(query);
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
-      if (err)
+      if (err) {
+        console.log(err);
         reject(err)
+      }
       else
         resolve(result.map(res => {
           const plainObject = _.toPlainObject(res)

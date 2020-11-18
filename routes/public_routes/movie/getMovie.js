@@ -28,6 +28,7 @@ app.get('/movie', async (req, res, next) => {
     if (moviePageResult.length) {
         return res.status(200).send(moviePageResult)
     }
+    console.log('error');
 })
 
 
