@@ -17,9 +17,8 @@ app.get('/movie', async (req, res, next) => {
 
     // apabila searchParams tidak ada, searchParams = {}
     if (req.query.genre) {
-        genre = req.query.genre
         // apabila tidak ada search query, lakukan pengambilan movie page:
-        const moviePageResult = await dbMovie.getMoviebyGenre(genre, startIndex, limit)
+        const moviePageResult = await dbMovie.getMoviebyGenre(req.query.genre, startIndex, limit)
             .catch(err => next(err))
         if (moviePageResult.length) {
             return res.status(200).send(moviePageResult)
