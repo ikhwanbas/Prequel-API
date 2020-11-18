@@ -82,8 +82,8 @@ ON m.id = ml.movie_id
 GROUP BY m.id
 
 HAVING genre LIKE "%${genre}%"
+ LIMIT ${startIndex}, ${limit}
 `
-  query += ` LIMIT ${startIndex}, ${limit}`
 
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
