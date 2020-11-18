@@ -88,7 +88,6 @@ GROUP BY m.id`
 
   query += ` LIMIT ${startIndex}, ${limit}`
 
-  console.log(query);
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err) {
