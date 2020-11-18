@@ -29,12 +29,12 @@ m.title,
 
 GROUP_CONCAT(
 CASE WHEN mi.type = '/poster'
-THEN text ELSE NULL END SEPARATOR ', '
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
 ) as poster_url,
 
 GROUP_CONCAT(
 CASE WHEN mi.type != '/poster'
-THEN text ELSE NULL END SEPARATOR ', '
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
 ) as image_urls,
 
 m.release_date,
