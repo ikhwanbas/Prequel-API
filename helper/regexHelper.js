@@ -36,18 +36,18 @@ const email = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+
 //                                  |
 //                                  allowed characters before @
 
-const password = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-//                       └─────┬─────┘ └──┬──┘ └──┬───┘  |
-//                             |          |       |      |
-//                             |          |       |      |
-//                             |          |       |      |
-//                             |          |       |      password must be at least 8 characters long
-//                             |          |       |
-//                             |          |       allowed characters
-//                             |          | 
-//                             |          at least one number  
-//                             | 
-//                             at least one letter
+const password = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+//                  └─────┬─────┘ └──┬──┘ └───────┬──────┘  |
+//                        |          |            |         |
+//                        |          |            |         |
+//                        |          |            |         |
+//                        |          |            |         password must be at least 8 characters long
+//                        |          |            |
+//                        |          |            allowed characters
+//                        |          | 
+//                        |          at least one number  
+//                        | 
+//                        at least one letter
 
 module.exports = {
     letter,
