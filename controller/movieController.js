@@ -143,7 +143,7 @@ GROUP_CONCAT(
 CASE WHEN md.type = '/director' 
 THEN md.text ELSE NULL END SEPARATOR ', ' 
 ) as director, 
-GROUP_CONCAT(movie_details.text SEPARATOR ', ') as details 
+GROUP_CONCAT(md.text SEPARATOR ', ') as details 
 
 FROM movies m 
 
