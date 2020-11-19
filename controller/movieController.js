@@ -257,10 +257,82 @@ LIMIT ${startIndex}, ${limit};`
   })
 }
 
+function getMovieById(id) {
+  let query = `
+SELECT m.id,
+m.title,
+
+GROUP_CONCAT(
+CASE WHEN mi.type = '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as poster_url,
+
+GROUP_CONCAT(
+CASE WHEN mi.type != '/poster'
+THEN mi.image_url ELSE NULL END SEPARATOR ', '
+) as image_urls,
+
+m.release_date,
+m.synopsis,
+m.info,
+m.trailer_url,
+COUNT(ml.id) as like_count,
+AVG(mr.rating) as average_rating,
+COUNT(mr.id) as review_count,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/genre'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as genre,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/star'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as star,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/production'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as production,
+
+GROUP_CONCAT(
+CASE WHEN md.type = '/director'
+THEN md.text ELSE NULL END SEPARATOR ', '
+) as director
+
+FROM movies m
+
+LEFT JOIN movie_details md
+ON m.id = md.movie_id
+
+LEFT JOIN movie_images mi
+ON m.id = mi.movie_id
+
+LEFT JOIN movie_reviews mr
+ON m.id = mr.movie_id
+
+LEFT JOIN movie_likes ml
+ON m.id = ml.movie_id
+WHERE m.id = "${id}"
+GROUP BY m.id`
 
 
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result.map(res => {
+          const plainObject = _.toPlainObject(res)
+          const camelCaseObject = humps.camelizeKeys(plainObject)
+          return camelCaseObject
+        }))
+    })
+  })
+}
 
 module.exports = {
+  getMovieById,
   getMoviebyGenre,
   getMovie,
   search
