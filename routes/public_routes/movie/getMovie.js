@@ -25,6 +25,10 @@ app.get('/movie', async (req, res, next) => {
         if (genreResult.length) {
             return res.status(200).send(genreResult)
         }
+        return res.status(404).json({
+            code: 404,
+            message: "Error: data not found"
+        })
     }
 
 
@@ -35,6 +39,10 @@ app.get('/movie', async (req, res, next) => {
         if (searchResult.length) {
             return res.status(200).send(searchResult)
         }
+        return res.status(404).json({
+            code: 404,
+            message: "Error: data not found"
+        })
     }
 
 
@@ -44,10 +52,10 @@ app.get('/movie', async (req, res, next) => {
     if (moviePageResult.length) {
         return res.status(200).send(moviePageResult)
     }
-
-
-
-
+    return res.status(404).json({
+        code: 404,
+        message: "Error: data not found"
+    })
 })
 
 
