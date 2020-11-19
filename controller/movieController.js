@@ -103,7 +103,7 @@ HAVING genre LIKE "%${genre}%"
 
 
 function search(searchParameter, startIndex, limit) {
-  let query = `SELECT 
+  let query = `
 SELECT m.id, 
 m.title, 
 GROUP_CONCAT( 
