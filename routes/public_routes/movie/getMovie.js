@@ -18,17 +18,36 @@ app.get('/movie', async (req, res, next) => {
     }
 
     // apabila searchParams tidak ada, searchParams = {}
-    let searchParams = {}
-    if (req.body && req.body.length > 0) {
-        searchParams = req.body
+    if (req.query.genre) {
+        // apabila tidak ada search query, lakukan pengambilan movie page:
+        const genreResult = await dbMovie.getMoviebyGenre(req.query.genre, startIndex, limit)
+            .catch(err => next(err))
+        if (genreResult.length) {
+            return res.status(200).send(genreResult)
+        }
     }
 
+
+    if (req.query.search) {
+        // melakukan pengambilan data dari database apabila ada parameter search:
+        const searchResult = await dbMovie.search(req.query.search, startIndex, limit
+        ).catch(err => next(err))
+        if (searchResult.length) {
+            return res.status(200).send(searchResult)
+        }
+    }
+
+
     // apabila tidak ada search query, lakukan pengambilan movie page:
-    const moviePageResult = await dbMovie.getMovie(searchParams, startIndex, limit)
+    const moviePageResult = await dbMovie.getMovie(startIndex, limit)
         .catch(err => next(err))
     if (moviePageResult.length) {
         return res.status(200).send(moviePageResult)
     }
+
+
+
+
 })
 
 
