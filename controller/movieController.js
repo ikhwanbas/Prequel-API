@@ -162,9 +162,9 @@ ON m.id = ml.movie_id
 GROUP BY m.id 
 
 HAVING title LIKE '%${searchParameter}%' 
-AND synopsis LIKE '%${searchParameter}%' 
-AND info LIKE '%${searchParameter}%' 
-AND details LIKE '%${searchParameter}%' 
+OR synopsis LIKE '%${searchParameter}%' 
+OR info LIKE '%${searchParameter}%' 
+OR details LIKE '%${searchParameter}%' 
 LIMIT ${startIndex}, ${limit};`
 
   return new Promise((resolve, reject) => {
