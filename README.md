@@ -1,3 +1,23 @@
+# Prequel API
+A movie Reviews API with SQL-Express-Node (SEN) Tech Stack.
+
+An API for a Movie-Reviews App in Collaborating with Front End (React) and Mobile App (React Native) developers.
+# Specifications
+
+1. SQL-Express-Node (SEN) tech stack
+2. Automated with CI/CD Pipelines
+3. Deployed to Amazon Web Services (https://team-c-be-binar8.nandaworks.com)
+
+# Features
+1. Authorization feature with Passport & JSON Web Token (JWT)
+2. Password encryption with Bcrypt.js
+3. Search feature with filter and pagination
+4. Three user-role: Public, User, and Admin
+# Entity-Relationship Diagram (ERD)
+
+![Database Schema](https://i.ibb.co/LrvRb0L/prequel-api-2.png)
+
+
 # Installation
 In order to start this project for the first time, you should run
 ```
@@ -7,12 +27,8 @@ To start this project, run
 ```
 npm start
 ```
-To start with nodemon, use
-```
-npm run dev
-```
 
-# How to access the server
+<!-- # How to access the server
 
 ## 1. Put the SSH key into a folder:
 Put the SSH key (i.e. binar-batch8.pem) into a folder (e.g. /home/kunci/binar-batch8.pem)
@@ -85,5 +101,5 @@ MYSQL_HOST=""
 PORT=""
 JWT_SECRET=""
 ```
-
+ -->
 
