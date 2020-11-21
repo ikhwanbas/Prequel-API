@@ -1,6 +1,4 @@
 # Prequel API
-A movie Reviews API with SQL-Express-Node (SEN) Tech Stack.
-
 An API for a Movie-Reviews App in Collaborating with Front End (React) and Mobile App (React Native) developers.
 # Specifications
 
