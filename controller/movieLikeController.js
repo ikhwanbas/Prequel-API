@@ -1,9 +1,7 @@
 // const { v4: uuidv4 } = require('uuid');
-const shortid = require('shortid');
 const db = require('../connection/dbConnection')
 const _ = require('lodash')
 const humps = require('humps')
-const pluralize = require('pluralize')
 
 function chainWhere(object) {
   const parsedObject = humps.decamelizeKeys(object)
@@ -42,16 +40,11 @@ function createInsertColumns(object) {
   }
 }
 
-function get(tableName, searchParameters, output = '*') {
-  tableName = humps.decamelize(tableName).replace('-', '_')
-
-  let query = `SELECT ${output} FROM ${tableName}`
-
-  const searchParameterKeys = Object.keys(searchParameters)
-  if (searchParameterKeys.length) {
-    query += " WHERE " + chainWhere(searchParameters)
-  }
-
+// fungsi untuk menampilkan 2 kolom dari sebuah tabel dengan 1 kondisi
+function get(tableName, columnName1, columnName2, value1) {
+  let query = `SELECT  ${columnName1}, ${columnName2} 
+  FROM ${tableName}
+  WHERE ${columnName1} = "${value1}" `
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
@@ -66,19 +59,9 @@ function get(tableName, searchParameters, output = '*') {
   })
 }
 
-
-function getPage(tableName, searchParameters, output = '*', page, limit) {
-  tableName = humps.decamelize(tableName).replace('-', '_')
-
-  let query = `SELECT ${output} FROM ${tableName}`
-
-  const searchParameterKeys = Object.keys(searchParameters)
-  if (searchParameterKeys.length) {
-    query += " WHERE " + chainWhere(searchParameters)
-
-    query += ` LIMIT ${page}, ${limit}`
-  }
-
+// fungsi untuk mengambil data sebuah tabel dari database dengan 2 kondisi  
+function getMovieLike(tableName, columnName1, value1, columnName2, value2) {
+  let query = `SELECT * FROM ${tableName} WHERE ${columnName1} = "${value1}" AND ${columnName2} = "${value2}"`
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err)
@@ -93,97 +76,71 @@ function getPage(tableName, searchParameters, output = '*', page, limit) {
   })
 }
 
-
-function getJoin(tableLeft, tableRight, output = '*', rightId) {
-  tableLeft = humps.decamelize(tableLeft).replace('-', '_')
-  tableRight = humps.decamelize(tableRight).replace('-', '_')
-
-  let query = `SELECT ${output} FROM ${tableLeft} a LEFT JOIN ${tableRight} b`
-
-  query += ` ON a.id = b.${rightId}`
-
-
-  return new Promise((resolve, reject) => {
-    db.query(query, (err, result) => {
-      if (err)
-        reject(err)
-      else
-        resolve(result.map(res => {
-          const plainObject = _.toPlainObject(res)
-          const camelCaseObject = humps.camelizeKeys(plainObject)
-          return camelCaseObject
-        }))
-    })
-  })
-}
-
-
-function add(tableName, body) {
-  tableName = humps.decamelizeKeys(tableName)
-  let parsedTableName = tableName.replace('_', '-')
-  body.id = `/${pluralize.singular(parsedTableName)}/` + shortid()
-  const columnValue = createInsertColumns(body)
-
-  let query = `INSERT INTO ${tableName} (${columnValue.columns})
-  VALUES (${columnValue.values})`
-
+// fungsi untuk menambah nilai query (+1)
+function editPlusOne(tableName, columnName, id) {
+  let query = `UPDATE ${tableName}
+  SET ${columnName} = ${columnName} + 1
+  WHERE id="${id}"`
   return new Promise((resolve, reject) => {
     db.query(query, (err) => {
       if (err)
-        return reject(err)
+        reject(err)
       else
-        return resolve(body)
+        resolve()
     })
   })
 }
 
-function edit(tableName, id, body) {
-  tableName = humps.decamelize(tableName).replace('-', '_')
-
+// fungsi untuk mengurangi nilai query (-1) 
+function editMinusOne(tableName, columnName, id) {
   let query = `UPDATE ${tableName}
-  SET ${chainSet(body)}
+  SET ${columnName} = ${columnName} - 1
   WHERE id="${id}"`
   return new Promise((resolve, reject) => {
-    db.query(query, (err, result) => {
+    db.query(query, (err) => {
       if (err)
         reject(err)
-      else if (!result.affectedRows)
-        reject({
-          code: "ERR_NOT_FOUND"
-        })
       else
-        resolve(body)
+        resolve()
     })
   })
 }
 
-
-function remove(tableName, id) {
-  let query = `DELETE FROM ${tableName}
-  WHERE id="${id}"`
+// fungsi untuk melakukan delete dari sebuah tabel dengan kondisi columnName1 = id
+function deletes(tableName, columnName1, id) {
+  let query = `DELETE from ${tableName}
+  WHERE ${columnName1}="${id}"`
   return new Promise((resolve, reject) => {
-    db.query(query, (err, result) => {
+    db.query(query, (err) => {
       if (err)
         reject(err)
-      else if (!result.affectedRows)
-        reject({
-          code: "ERR_NOT_FOUND"
-        })
       else
-        resolve(id)
+        resolve()
     })
   })
 }
 
-
+// fungsi untuk melakukan insert data ke database dengan 3 kolom dalam satu tabel
+function add(tableName, columnName1, value1, columnName2, value2, columnName3, value3) {
+  let query = `INSERT INTO ${tableName} (${columnName1}, ${columnName2}, ${columnName3} )
+  VALUES ("${value1}", "${value2}", "${value3}")`
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result)
+    })
+  })
+}
 module.exports = {
   chainWhere,
   chainSet,
   createInsertColumns,
-  get,
+  getMovieLike,
   add,
-  edit,
-  remove,
-  getPage,
-  getJoin
+  get,
+  editPlusOne,
+  editMinusOne,
+  deletes
 }
